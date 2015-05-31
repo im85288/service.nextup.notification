@@ -20,19 +20,19 @@ class NextUpInfo(xbmcgui.WindowXMLDialog):
     def onInit(self):
         self.action_exitkeys_id = [10, 13]
     
-        image = self.item['art'].get('thumb','')
+        image = self.item['art'].get('tvshow.poster','')
+        clearartimage = self.item['art'].get('tvshow.clearart','')
         overview = self.item['plot']
         name = self.item['title']
         
         episodeInfo = ""
         season = self.item['season']
         episodeNum = self.item['episode']
-        episodeInfo = season + "x" + episodeNum + "."
+        episodeInfo = str(season) + "x" + str(episodeNum) + "."
         
         rating = str(round(float(self.item['rating'])))
         year = self.item['firstaired']
-        duration = self.item['resume']['total']
-        info = year + " " + str(duration) + " min"
+        info = year
         # set the dialog data
         self.getControl(3000).setLabel(name)
         self.getControl(3001).setText(overview)
@@ -40,6 +40,7 @@ class NextUpInfo(xbmcgui.WindowXMLDialog):
         self.getControl(3004).setLabel(info)
         
         self.getControl(3009).setImage(image)
+        self.getControl(3006).setImage(clearartimage)
         
         if rating != None:
             self.getControl(3003).setLabel(rating)

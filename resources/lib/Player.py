@@ -25,8 +25,6 @@ class Player( xbmc.Player ):
     addonId = clientInfo.getAddonId()
     addon = xbmcaddon.Addon(id=addonId)
 
-    WINDOW = xbmcgui.Window(10000)
-
     logLevel = 0
     played_information = {}
     settings = None
@@ -52,6 +50,7 @@ class Player( xbmc.Player ):
         self.logMsg( "Got active player "+ result ,2)
         result = json.loads(result)
         
+        # Seems to work too fast loop whilst waiting for it to become active
         while result["result"] == []:
             result = xbmc.executeJSONRPC( '{"jsonrpc": "2.0", "id": 1, "method": "Player.GetActivePlayers"}' )
             result = unicode(result, 'utf-8', errors='ignore')
@@ -81,15 +80,15 @@ class Player( xbmc.Player ):
                     self.logMsg( "Got earlier details of next up episode" + result,2)
                     if result:
                     
-                        result = unicode(json_query_string, 'utf-8', errors='ignore')
+                        result = unicode(result, 'utf-8', errors='ignore')
                         result = json.loads(result)
-                        self.logMsg( "Got details of next up episode" + result,2)
+                        self.logMsg( "Got details of next up episode %s" % str(result),2)
                         xbmc.sleep( 100 )
                         
                         # Find the next unwatched and the newest added episodes
                         if result.has_key( "result" ) and result[ "result" ].has_key( "episodes" ):
                             episode = result[ "result" ][ "episodes" ][0]
-                            self.logMsg( "episode details" + episode,2)
+                            self.logMsg( "episode details %s" % str(episode),2)
                             if episode[ "playcount" ] == 0:
                                     # we have a next up episode
                                     pDialog = xbmcgui.DialogProgress()
@@ -106,7 +105,7 @@ class Player( xbmc.Player ):
                                         totalTime = xbmc.Player().getTotalTime()
                                     nextUpPage.close()
                                     if not nextUpPage.isCancel():
+                                        self.logMsg( "playing media episode id %s" % str(episode["episodeid"]),2)
                                         # Play media
-                                        xbmc.executeJSONRPC('{ "jsonrpc": "2.0", "id": 0, "method": "Player.Open", "params": { "item": {"episodeid": ' + episode["episodeid"] + '} } }' )
-                                        xbmcplugin.setResolvedUrl( handle=int( data[ 2 ] ), succeeded=False, listitem=xbmcgui.ListItem() )
-                                
+                                        xbmc.executeJSONRPC('{ "jsonrpc": "2.0", "id": 0, "method": "Player.Open", "params": { "item": {"episodeid": ' + str(episode["episodeid"]) + '} } }' )
+            

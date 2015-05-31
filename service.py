@@ -38,22 +38,27 @@ class Service():
         utils.logMsg("%s %s" % (self.addonName, className), str(msg), int(lvl))
             
     def ServiceEntryPoint(self):
-        
+        monitor = xbmc.Monitor()
         lastProgressUpdate = datetime.today()
         player = Player()
         
         lastFile = None
         
-        while not xbmc.abortRequested :
+        while not monitor.abortRequested() :
             if xbmc.Player().isPlaying():
                 try:
                     playTime = xbmc.Player().getTime()
+                        
                     totalTime = xbmc.Player().getTotalTime()
+                        
                     currentFile = xbmc.Player().getPlayingFile()
+                        
                     addonSettings = xbmcaddon.Addon(id='service.nextup.notification')
                     notificationtime = addonSettings.getSetting("autoPlaySeasonTime")
-                    if (totalTime - playTime <= int(notificationtime) and (lastFile==None or lastFile!=currentFile)):
+                        
+                    if (totalTime - playTime <= int(notificationtime) and (lastFile==None or lastFile!=currentFile)) and totalTime != 0:
                         lastFile = currentFile
+                        self.logMsg("Calling autoplayback totaltime - playtime is %s" % (totalTime - playTime) , 2)
                         player.autoPlayPlayback()
                         self.logMsg("Netflix style autoplay succeeded.", 2)
                             
