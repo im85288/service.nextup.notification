@@ -1,0 +1,7 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<strings>
+   <string id="30001">The number of seconds before the end to show the notification</string>
+   <string id="30002">Log Level:</string>
+   <string id="30003">Settings</string>
+   <string id="30004">Advanced</string>
+</strings>
