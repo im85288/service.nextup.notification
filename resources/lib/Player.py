@@ -92,7 +92,7 @@ class Player( xbmc.Player ):
                             if episode[ "playcount" ] == 0:
                                     # we have a next up episode
                                     pDialog = xbmcgui.DialogProgress()
-                                    nextUpPage = NextUpInfo("NextUpInfo.xml", addonSettings.getAddonInfo('path'), "default", "720p")
+                                    nextUpPage = NextUpInfo("script-nextup-notification-NextUpInfo.xml", addonSettings.getAddonInfo('path'), "default", "720p")
                                     nextUpPage.setItem(episode)
                                     playTime = xbmc.Player().getTime()
                                     totalTime = xbmc.Player().getTotalTime()
