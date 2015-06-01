@@ -72,7 +72,7 @@ class Player( xbmc.Player ):
                 if type == "episode":
                     # Get the next up episode
                     addonSettings = xbmcaddon.Addon(id='service.nextup.notification')
-        
+                    playMode = addonSettings.getSetting("autoPlayMode")
                     tvshowid = result[ "result" ][ "item" ][ "tvshowid" ]
                     self.logMsg( "Getting details of next up episode for tvshow id: "+str(tvshowid) ,1)
                     
@@ -104,7 +104,7 @@ class Player( xbmc.Player ):
                                         playTime = xbmc.Player().getTime()
                                         totalTime = xbmc.Player().getTotalTime()
                                     nextUpPage.close()
-                                    if not nextUpPage.isCancel():
+                                    if (not nextUpPage.isCancel() and playMode =="0") or (nextUpPage.isWatchNow() and playMode=="1"):
                                         self.logMsg( "playing media episode id %s" % str(episode["episodeid"]),2)
                                         # Play media
                                         xbmc.executeJSONRPC('{ "jsonrpc": "2.0", "id": 0, "method": "Player.Open", "params": { "item": {"episodeid": ' + str(episode["episodeid"]) + '} } }' )
