@@ -21,6 +21,7 @@ class NextUpInfo(xbmcgui.WindowXMLDialog):
         self.action_exitkeys_id = [10, 13]
     
         image = self.item['art'].get('tvshow.poster','')
+        thumb = self.item['art'].get('thumb','')
         clearartimage = self.item['art'].get('tvshow.clearart','')
         overview = self.item['plot']
         name = self.item['title']
@@ -40,6 +41,7 @@ class NextUpInfo(xbmcgui.WindowXMLDialog):
         self.getControl(3004).setLabel(info)
         
         self.getControl(3009).setImage(image)
+        self.getControl(3008).setImage(thumb)
         self.getControl(3006).setImage(clearartimage)
         
         if rating != None:

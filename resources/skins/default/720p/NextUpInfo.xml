@@ -15,6 +15,9 @@
 					<height>281</height>
 					<aspectratio align="right" aligny="bottom">keep</aspectratio>
 				</control>
+				<control type="image" id="3008">
+					<visible>false</visible>
+				</control>
 				<control type="image">
 					<top>110r</top>
 					<width>100%</width>
