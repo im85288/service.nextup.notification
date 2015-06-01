@@ -61,10 +61,14 @@ class Service():
                         self.logMsg("Calling autoplayback totaltime - playtime is %s" % (totalTime - playTime) , 2)
                         player.autoPlayPlayback()
                         self.logMsg("Netflix style autoplay succeeded.", 2)
+                    
+                    xbmc.sleep( 100 )
                             
                 except Exception, e:
                     self.logMsg("Exception in Playback Monitor Service: %s" % e)
                     pass
+            else:
+                xbmc.sleep( 500 )
 
         self.logMsg("======== STOP %s ========" % self.addonName, 0)
        
