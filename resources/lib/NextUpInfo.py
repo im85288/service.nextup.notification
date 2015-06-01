@@ -41,7 +41,12 @@ class NextUpInfo(xbmcgui.WindowXMLDialog):
         self.getControl(3004).setLabel(info)
         
         self.getControl(3009).setImage(image)
-        self.getControl(3008).setImage(thumb)
+        try:
+            thumbControl = self.getControl(3008)
+            if(thumbControl != None):
+                self.getControl(3008).setImage(thumb)
+        except:
+            pass
         self.getControl(3006).setImage(clearartimage)
         
         if rating != None:
