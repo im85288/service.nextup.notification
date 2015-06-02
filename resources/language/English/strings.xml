@@ -8,4 +8,7 @@
    <string id="30006">Watch Now</string>
    <string id="30007">Press cancel to stop automatic play of next episode...</string>
    <string id="30008">Up Next</string>
+   <string id="30009">Number of episodes before still watching query</string>
+   <string id="30010">Continue Watching?</string>
+   <string id="30012">Still there? Press Continue Watching to watch the next episode</string>
 </strings>

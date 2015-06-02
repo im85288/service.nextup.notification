@@ -28,33 +28,37 @@
 				<!-- buttons -->
 				<control type="button" id="3012">
 					<description>Watch Now</description>
-					<right>0</right>
+					<right>10</right>
 					<bottom>40</bottom>
-					<width>200</width>
+					<width>170</width>
 					<onup>3013</onup>
 					<ondown>3013</ondown>
 					<font>font14</font>
 					<label>$ADDON[service.nextup.notification 30006]</label>
 					<focusedcolor>FFededed</focusedcolor>
 					<disabledcolor>B3dddddd</disabledcolor>
-					<selectedcolor>FFff4081</selectedcolor>
-					<height>68</height>
+					<selectedcolor>FF000000</selectedcolor>
+					<height>40</height>
 					<textcolor>ff333333</textcolor>
+					<texturefocus colordiffuse="FF16571F" border="5">box.png</texturefocus>
+					<texturenofocus colordiffuse="FFFFFFFF" border="5">box.png</texturenofocus>
 				</control>
 				<control type="button" id="3013">
 					<description>Cancel</description>
-					<right>0</right>
-					<bottom>-30</bottom>
-					<width>200</width>
+					<right>10</right>
+					<bottom>-10</bottom>
+					<width>170</width>
 					<onup>3012</onup>
 					<ondown>3012</ondown>
 					<font>font14</font>
 					<label>222</label>
 					<focusedcolor>FFededed</focusedcolor>
 					<disabledcolor>B3dddddd</disabledcolor>
-					<selectedcolor>FFff4081</selectedcolor>
-					<height>68</height>
+					<selectedcolor>FF000000</selectedcolor>
+					<height>40</height>
 					<textcolor>ff333333</textcolor>
+					<texturefocus colordiffuse="FF16571F" border="5">box.png</texturefocus>
+					<texturenofocus colordiffuse="FFFFFFFF" border="5">box.png</texturenofocus>
 				</control>
 			</control>
 			<control type="group">
@@ -104,7 +108,7 @@
 							<visible>false</visible>
 						</control>
 						<control type="image">
-							<top>52</top>
+							<top>58</top>
 							<width>24</width>
 							<height>24</height>
 							<aspect>keep</aspect>
