@@ -55,12 +55,13 @@ class Service():
                         
                     addonSettings = xbmcaddon.Addon(id='service.nextup.notification')
                     notificationtime = addonSettings.getSetting("autoPlaySeasonTime")
-                        
-                    if (totalTime - playTime <= int(notificationtime) and (lastFile==None or lastFile!=currentFile)) and totalTime != 0:
-                        lastFile = currentFile
-                        self.logMsg("Calling autoplayback totaltime - playtime is %s" % (totalTime - playTime) , 2)
-                        player.autoPlayPlayback()
-                        self.logMsg("Netflix style autoplay succeeded.", 2)
+                    
+                    if xbmcgui.Window(10000).getProperty("PseudoTVRunning") != "True":
+                        if (totalTime - playTime <= int(notificationtime) and (lastFile==None or lastFile!=currentFile)) and totalTime != 0:
+                            lastFile = currentFile
+                            self.logMsg("Calling autoplayback totaltime - playtime is %s" % (totalTime - playTime) , 2)
+                            player.autoPlayPlayback()
+                            self.logMsg("Netflix style autoplay succeeded.", 2)
                     
                     xbmc.sleep(1000)
                             
