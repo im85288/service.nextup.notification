@@ -74,12 +74,12 @@ class Player( xbmc.Player ):
                     addonSettings = xbmcaddon.Addon(id='service.nextup.notification')
                     playMode = addonSettings.getSetting("autoPlayMode")
                     tvshowid = result[ "result" ][ "item" ][ "tvshowid" ]
+                    currentepisodeid = result[ "result" ][ "item" ][ "id" ]
                     self.logMsg( "Getting details of next up episode for tvshow id: "+str(tvshowid) ,1)
                     if self.currenttvshowid != tvshowid: 
                         self.currenttvshowid = tvshowid
                         self.playedinarow = 1             
                     result = xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "VideoLibrary.GetEpisodes", "params": { "tvshowid": %d, "sort": {"method":"episode"}, "filter": {"field": "playcount", "operator": "lessthan", "value":"1"}, "properties": [ "title", "playcount", "season", "episode", "showtitle", "plot", "file", "rating", "resume", "tvshowid", "art", "firstaired", "runtime", "writer", "dateadded", "lastplayed" ], "limits":{"start":1,"end":2}}, "id": "1"}' %tvshowid)
-                    self.logMsg( "Got earlier details of next up episode" + result,2)
                     if result:      
                         result = unicode(result, 'utf-8', errors='ignore')
                         result = json.loads(result)
@@ -90,7 +90,8 @@ class Player( xbmc.Player ):
                         if result.has_key( "result" ) and result[ "result" ].has_key( "episodes" ):
                             episode = result[ "result" ][ "episodes" ][0]
                             self.logMsg( "episode details %s" % str(episode),2)
-                            if episode[ "playcount" ] == 0:
+                            episodeid =  episode["episodeid"]
+                            if episode[ "playcount" ] == 0 and currentepisodeid != episodeid:
                                     # we have a next up episode
                                     pDialog = xbmcgui.DialogProgress()
                                     nextUpPage = NextUpInfo("script-nextup-notification-NextUpInfo.xml", addonSettings.getAddonInfo('path'), "default", "720p")
@@ -129,7 +130,7 @@ class Player( xbmc.Player ):
                                     else:
                                         self.playedinarow = self.playedinarow + 1
                                     if (shouldPlayDefault and playMode =="0") or (shouldPlayNonDefault and playMode=="1"):
-                                        self.logMsg( "playing media episode id %s" % str(episode["episodeid"]),2)
+                                        self.logMsg( "playing media episode id %s" % str(episodeid),2)
                                         # Play media
                                         xbmc.executeJSONRPC('{ "jsonrpc": "2.0", "id": 0, "method": "Player.Open", "params": { "item": {"episodeid": ' + str(episode["episodeid"]) + '} } }' )
             

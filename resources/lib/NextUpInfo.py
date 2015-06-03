@@ -23,6 +23,7 @@ class NextUpInfo(xbmcgui.WindowXMLDialog):
         image = self.item['art'].get('tvshow.poster','')
         thumb = self.item['art'].get('thumb','')
         clearartimage = self.item['art'].get('tvshow.clearart','')
+        landscapeimage = self.item['art'].get('tvshow.landscape','')
         overview = self.item['plot']
         name = self.item['title']
         
@@ -47,6 +48,14 @@ class NextUpInfo(xbmcgui.WindowXMLDialog):
                 self.getControl(3008).setImage(thumb)
         except:
             pass
+        
+        try:
+            landscapeControl = self.getControl(3010)
+            if(landscapeControl != None):
+                self.getControl(3010).setImage(landscapeimage)
+        except:
+            pass
+        
         self.getControl(3006).setImage(clearartimage)
         
         if rating != None:
