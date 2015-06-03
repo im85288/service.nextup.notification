@@ -1,3 +1,7 @@
+[B]1.0.2[/B]
+- Bug fix for playing same last episode
+- Landscape image added for next up
+
 [B]1.0.1[/B]
 - Added Still Watching Info
 - Minor layout adjustment NextUpInfo
