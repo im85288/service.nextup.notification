@@ -22,6 +22,8 @@ Skinners:
           - 3008 - Episode Thumb
           - 3009 - TV Show Poster
           - 3010 - TV Show Landscape
+          - 3012 - Watch Now Button
+          - 3013 - Cancel Button
           
       - script-nextup-notification-StillWatchingInfo.xml
           - 4000 - Label
@@ -31,3 +33,5 @@ Skinners:
           - 4004 - First Aired
           - 4005 - TV Show Landscape
           - 4006 - Plot
+          - 4012 - Continue Watching Button
+          - 4013 - Cancel Button
