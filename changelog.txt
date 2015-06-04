@@ -1,3 +1,6 @@
+[B]1.0.3[/B]
+- Does not show when pseudotvlive is active
+
 [B]1.0.2[/B]
 - Bug fix for playing same last episode
 - Landscape image added for next up
