@@ -9,3 +9,25 @@ Configuration:
 Skinners:
 
   - There is a script-nextup-notification-NextUpInfo.xml and script-nextup-notification-StillWatchingInfo.xml file located in default/720p/ simply copy this to your skin folder and adjust it how you like it. 
+  
+      Controls Available:
+  
+      - script-nextup-notification-NextUpInfo.xml
+          - 3000 - Title
+          - 3001 - Plot
+          - 3002 - Season/Episode
+          - 3003 - Rating
+          - 3004 - First Aired 
+          - 3006 - TV Show ClearArt
+          - 3008 - Episode Thumb
+          - 3009 - TV Show Poster
+          - 3010 - TV Show Landscape
+          
+      - script-nextup-notification-StillWatchingInfo.xml
+          - 4000 - Label
+          - 4001 - TV Show Poster
+          - 4002 - Episode Thumb
+          - 4003 - Rating
+          - 4004 - First Aired
+          - 4005 - TV Show Landscape
+          - 4006 - Plot
