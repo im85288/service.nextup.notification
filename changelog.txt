@@ -1,3 +1,6 @@
+[B]1.0.4[/B]
+- Added Season Number, Episode Number, Video Resolution and TV Show Fanart for skin support
+
 [B]1.0.3[/B]
 - Does not show when pseudotvlive is active
 

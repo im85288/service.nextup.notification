@@ -79,7 +79,7 @@ class Player( xbmc.Player ):
                     if self.currenttvshowid != tvshowid: 
                         self.currenttvshowid = tvshowid
                         self.playedinarow = 1             
-                    result = xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "VideoLibrary.GetEpisodes", "params": { "tvshowid": %d, "sort": {"method":"episode"}, "filter": {"field": "playcount", "operator": "lessthan", "value":"1"}, "properties": [ "title", "playcount", "season", "episode", "showtitle", "plot", "file", "rating", "resume", "tvshowid", "art", "firstaired", "runtime", "writer", "dateadded", "lastplayed" ], "limits":{"start":1,"end":2}}, "id": "1"}' %tvshowid)
+                    result = xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "VideoLibrary.GetEpisodes", "params": { "tvshowid": %d, "sort": {"method":"episode"}, "filter": {"field": "playcount", "operator": "lessthan", "value":"1"}, "properties": [ "title", "playcount", "season", "episode", "showtitle", "plot", "file", "rating", "resume", "tvshowid", "art", "firstaired", "runtime", "writer", "dateadded", "lastplayed" , "streamdetails"], "limits":{"start":1,"end":2}}, "id": "1"}' %tvshowid)
                     if result:      
                         result = unicode(result, 'utf-8', errors='ignore')
                         result = json.loads(result)
@@ -93,7 +93,6 @@ class Player( xbmc.Player ):
                             episodeid =  episode["episodeid"]
                             if episode[ "playcount" ] == 0 and currentepisodeid != episodeid:
                                     # we have a next up episode
-                                    pDialog = xbmcgui.DialogProgress()
                                     nextUpPage = NextUpInfo("script-nextup-notification-NextUpInfo.xml", addonSettings.getAddonInfo('path'), "default", "720p")
                                     nextUpPage.setItem(episode)
                                     stillWatchingPage = StillWatchingInfo("script-nextup-notification-StillWatchingInfo.xml", addonSettings.getAddonInfo('path'), "default", "720p")

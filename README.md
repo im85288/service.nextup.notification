@@ -17,13 +17,17 @@ Skinners:
           - 3001 - Plot
           - 3002 - Season/Episode
           - 3003 - Rating
-          - 3004 - First Aired 
+          - 3004 - First Aired
+          - 3005 - TV Show Fanart 
           - 3006 - TV Show ClearArt
           - 3008 - Episode Thumb
           - 3009 - TV Show Poster
           - 3010 - TV Show Landscape
+          - 3011 - Video Resolution
           - 3012 - Watch Now Button
           - 3013 - Cancel Button
+          - 3015 - Season Number
+          - 3016 - Episode Number
           
       - script-nextup-notification-StillWatchingInfo.xml
           - 4000 - Label
@@ -33,5 +37,9 @@ Skinners:
           - 4004 - First Aired
           - 4005 - TV Show Landscape
           - 4006 - Plot
+          - 4007 - TV Show Fanart
+          - 4008 - Season Number
+          - 4009 - Episode Number
+          - 4011 - Video Resolution
           - 4012 - Continue Watching Button
           - 4013 - Cancel Button

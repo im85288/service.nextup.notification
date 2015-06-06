@@ -13,7 +13,7 @@ class NextUpInfo(xbmcgui.WindowXMLDialog):
     item = None
     cancel = False
     watchnow = False
-    
+
     def __init__(self, *args, **kwargs):
         xbmcgui.WindowXMLDialog.__init__(self, *args, **kwargs)
 
@@ -24,6 +24,7 @@ class NextUpInfo(xbmcgui.WindowXMLDialog):
         thumb = self.item['art'].get('thumb','')
         clearartimage = self.item['art'].get('tvshow.clearart','')
         landscapeimage = self.item['art'].get('tvshow.landscape','')
+        fanartimage = self.item['art'].get('tvshow.fanart','')
         overview = self.item['plot']
         name = self.item['title']
         
@@ -42,6 +43,14 @@ class NextUpInfo(xbmcgui.WindowXMLDialog):
         self.getControl(3004).setLabel(info)
         
         self.getControl(3009).setImage(image)
+        
+        try:
+            fanartControl = self.getControl(3005)
+            if(fanartControl != None):
+                fanartControl.setImage(fanartimage)
+        except:
+            pass
+        
         try:
             thumbControl = self.getControl(3008)
             if(thumbControl != None):
@@ -63,6 +72,28 @@ class NextUpInfo(xbmcgui.WindowXMLDialog):
         else:
             self.getControl(3003).setVisible(False)
         
+        try:
+            seasonControl = self.getControl(3015)
+            if(seasonControl != None):
+                seasonControl.setLabel(season)
+        except:
+            pass
+        
+        try:
+            episodeControl = self.getControl(3016)
+            if(episodeControl != None):
+                episodeControl.setLabel(episodeNum)
+        except:
+            pass
+        
+        try:
+            resolutionControl = self.getControl(3011)
+            if(resolutionControl != None):
+                resolution1 =  self.item['streamdetails'].get('video')
+                resolution = resolution1[0].get('height')    
+                resolutionControl.setLabel(resolution)
+        except:
+            pass
         
     def setItem(self, item):
         self.item = item
