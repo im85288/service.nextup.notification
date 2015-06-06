@@ -75,14 +75,14 @@ class NextUpInfo(xbmcgui.WindowXMLDialog):
         try:
             seasonControl = self.getControl(3015)
             if(seasonControl != None):
-                seasonControl.setLabel(season)
+                seasonControl.setLabel(str(season))
         except:
             pass
         
         try:
             episodeControl = self.getControl(3016)
             if(episodeControl != None):
-                episodeControl.setLabel(episodeNum)
+                episodeControl.setLabel(str(episodeNum))
         except:
             pass
         
