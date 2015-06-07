@@ -91,7 +91,7 @@ class NextUpInfo(xbmcgui.WindowXMLDialog):
             if(resolutionControl != None):
                 resolution1 =  self.item['streamdetails'].get('video')
                 resolution = resolution1[0].get('height')    
-                resolutionControl.setLabel(resolution)
+                resolutionControl.setLabel(str(resolution))
         except:
             pass
         
