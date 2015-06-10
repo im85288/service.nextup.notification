@@ -55,7 +55,13 @@ class Player( xbmc.Player ):
                position = position + 1
         # now return the episode
         self.logMsg("Find next episode found next episode in position: "+str(position), 1)  
-        return result[ "result" ][ "episodes" ][position] 
+        try:
+            episode = result[ "result" ][ "episodes" ][position]
+        except:
+            # no next episode found - back to the start
+            episode = result[ "result" ][ "episodes" ][0]
+        
+        return episode
          
     
     def autoPlayPlayback(self):
@@ -124,9 +130,9 @@ class Player( xbmc.Player ):
                                 includePlaycount = episode[ "playcount" ] == 0
                             if includePlaycount and currentepisodeid != episodeid:
                                     # we have a next up episode
-                                    nextUpPage = NextUpInfo("script-nextup-notification-NextUpInfo.xml", addonSettings.getAddonInfo('path'), "default", "720p")
+                                    nextUpPage = NextUpInfo("script-nextup-notification-NextUpInfo.xml", addonSettings.getAddonInfo('path'), "default", "1080i")
                                     nextUpPage.setItem(episode)
-                                    stillWatchingPage = StillWatchingInfo("script-nextup-notification-StillWatchingInfo.xml", addonSettings.getAddonInfo('path'), "default", "720p")
+                                    stillWatchingPage = StillWatchingInfo("script-nextup-notification-StillWatchingInfo.xml", addonSettings.getAddonInfo('path'), "default", "1080i")
                                     stillWatchingPage.setItem(episode)    
                                     playTime = xbmc.Player().getTime()
                                     totalTime = xbmc.Player().getTotalTime()
