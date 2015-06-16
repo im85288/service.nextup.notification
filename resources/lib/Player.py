@@ -115,8 +115,8 @@ class Player( xbmc.Player ):
         try:
             episode = result[ "result" ][ "episodes" ][position]
         except:
-            # no next episode found - back to the start
-            episode = result[ "result" ][ "episodes" ][0]
+            # no next episode found
+            episode = None
         
         return episode
          
@@ -187,6 +187,10 @@ class Player( xbmc.Player ):
                                 episode = self.findNextEpisode(result)
                             else:
                                 episode = result[ "result" ][ "episodes" ][0]
+                                
+                            if episode == None:
+                                 # no episode get out of here
+                                 return   
                             self.logMsg( "episode details %s" % str(episode),2)
                             episodeid =  episode["episodeid"]
                             includePlaycount = True
