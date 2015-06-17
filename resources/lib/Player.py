@@ -154,7 +154,7 @@ class Player( xbmc.Player ):
                     addonSettings = xbmcaddon.Addon(id='service.nextup.notification')
                     playMode = addonSettings.getSetting("autoPlayMode")
                     tvshowid = result[ "result" ][ "item" ][ "tvshowid" ]
-                    currentepisodeid = result[ "result" ][ "item" ][ "id" ]
+                    currentepisodeid = result[ "result" ][ "item" ][ "episode" ]
                     currentseasonid = result[ "result" ][ "item" ][ "season" ]
                     currentshowtitle = result[ "result" ][ "item" ][ "showtitle" ]
                     tvshowid = result[ "result" ][ "item" ][ "tvshowid" ]
