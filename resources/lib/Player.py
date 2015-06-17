@@ -154,7 +154,6 @@ class Player( xbmc.Player ):
                     addonSettings = xbmcaddon.Addon(id='service.nextup.notification')
                     playMode = addonSettings.getSetting("autoPlayMode")
                     tvshowid = result[ "result" ][ "item" ][ "tvshowid" ]
-                    currentepisodeid = result[ "result" ][ "item" ][ "id" ]
                     currentepisodenumber = result[ "result" ][ "item" ][ "episode" ]
                     currentseasonid = result[ "result" ][ "item" ][ "season" ]
                     currentshowtitle = result[ "result" ][ "item" ][ "showtitle" ]
@@ -164,6 +163,8 @@ class Player( xbmc.Player ):
                     if tvshowid == -1:
                     	tvshowid, episodeid = self.iStream_fix(tvshowid,currentshowtitle,currentepisodenumber,currentseasonid)
                     	currentepisodeid = episodeid
+                    else:
+                        currentepisodeid = result[ "result" ][ "item" ][ "id" ]
                     
                     self.currentepisodeid = currentepisodeid
                     self.logMsg( "Getting details of next up episode for tvshow id: "+str(tvshowid) ,1)
