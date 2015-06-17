@@ -154,14 +154,15 @@ class Player( xbmc.Player ):
                     addonSettings = xbmcaddon.Addon(id='service.nextup.notification')
                     playMode = addonSettings.getSetting("autoPlayMode")
                     tvshowid = result[ "result" ][ "item" ][ "tvshowid" ]
-                    currentepisodeid = result[ "result" ][ "item" ][ "episode" ]
+                    currentepisodeid = result[ "result" ][ "item" ][ "id" ]
+                    currentepisodenumber = result[ "result" ][ "item" ][ "episode" ]
                     currentseasonid = result[ "result" ][ "item" ][ "season" ]
                     currentshowtitle = result[ "result" ][ "item" ][ "showtitle" ]
                     tvshowid = result[ "result" ][ "item" ][ "tvshowid" ]
                     
                     # I am a STRM ###
                     if tvshowid == -1:
-                    	tvshowid, episodeid = self.iStream_fix(tvshowid,currentshowtitle,currentepisodeid,currentseasonid)
+                    	tvshowid, episodeid = self.iStream_fix(tvshowid,currentshowtitle,currentepisodenumber,currentseasonid)
                     	currentepisodeid = episodeid
                     
                     self.currentepisodeid = currentepisodeid
