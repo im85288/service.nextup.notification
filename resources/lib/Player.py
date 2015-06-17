@@ -57,6 +57,7 @@ class Player( xbmc.Player ):
     		result = unicode(result, 'utf-8', errors='ignore')
     		self.logMsg(json.loads(result),1)
     		return json.loads(result)
+    
     def iStream_fix(self, show_npid, showtitle, episode_np, season_np):
     
     	# streams from iStream dont provide the showid and epid for above
@@ -113,8 +114,9 @@ class Player( xbmc.Player ):
         # now return the episode
         self.logMsg("Find next episode found next episode in position: "+str(position), 1)  
         try:
+            position = int(position)
             episode = result[ "result" ][ "episodes" ][position]
-        except:
+        except :
             # no next episode found - back to the start
             episode = result[ "result" ][ "episodes" ][0]
         
@@ -142,6 +144,7 @@ class Player( xbmc.Player ):
             
             # Get details of the playing media
             self.logMsg( "Getting details of playing media" ,1)
+            #
             result = xbmc.executeJSONRPC( '{"jsonrpc": "2.0", "id": 1, "method": "Player.GetItem", "params": {"playerid": ' + str( playerid ) + ', "properties": ["showtitle", "tvshowid", "episode", "season", "playcount"] } }' )
             result = unicode(result, 'utf-8', errors='ignore')
             self.logMsg( "Got details of playing media" + result,2)
@@ -151,20 +154,26 @@ class Player( xbmc.Player ):
                 type = result[ "result" ][ "item" ][ "type" ]
                 if type == "episode":
                     # Get the next up episode
+                    self.logMsg( "Getting next episode...1",1)
                     addonSettings = xbmcaddon.Addon(id='service.nextup.notification')
                     playMode = addonSettings.getSetting("autoPlayMode")
-                    tvshowid = result[ "result" ][ "item" ][ "tvshowid" ]
-                    currentepisodeid = result[ "result" ][ "item" ][ "id" ]
+                    currentepisodeid = result[ "result" ][ "item" ][ "episode" ]
+                    self.logMsg( "Getting next episode...2",1)
+                    self.currentepisodeid = currentepisodeid
                     currentseasonid = result[ "result" ][ "item" ][ "season" ]
                     currentshowtitle = result[ "result" ][ "item" ][ "showtitle" ]
+                    self.logMsg( "Getting next episode...3",1)
                     tvshowid = result[ "result" ][ "item" ][ "tvshowid" ]
-                    
+                    self.logMsg( "Getting next episode...4",1)
+                    # prevcheck = False
+                         
                     # I am a STRM ###
                     if tvshowid == -1:
                     	tvshowid, episodeid = self.iStream_fix(tvshowid,currentshowtitle,currentepisodeid,currentseasonid)
+                    	self.currentepisodeid = episodeid
                     	currentepisodeid = episodeid
+              
                     
-                    self.currentepisodeid = currentepisodeid
                     self.logMsg( "Getting details of next up episode for tvshow id: "+str(tvshowid) ,1)
                     if self.currenttvshowid != tvshowid: 
                         self.currenttvshowid = tvshowid
@@ -235,4 +244,6 @@ class Player( xbmc.Player ):
                                         self.logMsg( "playing media episode id %s" % str(episodeid),2)
                                         # Play media
                                         xbmc.executeJSONRPC('{ "jsonrpc": "2.0", "id": 0, "method": "Player.Open", "params": { "item": {"episodeid": ' + str(episode["episodeid"]) + '} } }' )
+            
+
             
