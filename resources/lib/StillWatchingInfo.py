@@ -5,7 +5,7 @@ import xbmcgui
 import xbmcaddon
 import json as json
 import urllib
-from platform import system
+from platform import machine
 
 ACTION_PLAYER_STOP = 13
 OS_MACHINE = machine()
