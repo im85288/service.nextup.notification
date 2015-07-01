@@ -15,7 +15,10 @@ class StillWatchingInfo(xbmcgui.WindowXMLDialog):
     stillwatching = False
     
     def __init__(self, *args, **kwargs):
-        xbmcgui.WindowXMLDialog.__init__(self, *args, **kwargs)
+        if OS_MACHINE[0:5] == 'armv7':
+            xbmcgui.WindowXMLDialog.__init__(self)
+        else:
+            xbmcgui.WindowXMLDialog.__init__(self, *args, **kwargs)
 
     def onInit(self):
         self.action_exitkeys_id = [10, 13]
