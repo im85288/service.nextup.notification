@@ -4,6 +4,7 @@ import xbmcgui
 import xbmcaddon
 import json as json
 import urllib
+from platform import system
 
 ACTION_PLAYER_STOP = 13
 
@@ -13,9 +14,10 @@ class NextUpInfo(xbmcgui.WindowXMLDialog):
     item = None
     cancel = False
     watchnow = False
+    OS_MACHINE = machine()
 
     def __init__(self, *args, **kwargs):
-        if OS_MACHINE[0:5] == 'armv7':
+        if self.OS_MACHINE[0:5] == 'armv7':
             xbmcgui.WindowXMLDialog.__init__(self)
         else:
             xbmcgui.WindowXMLDialog.__init__(self, *args, **kwargs)
