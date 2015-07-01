@@ -7,6 +7,7 @@ import urllib
 from platform import system
 
 ACTION_PLAYER_STOP = 13
+OS_MACHINE = machine()
 
 
 class NextUpInfo(xbmcgui.WindowXMLDialog):
@@ -14,10 +15,9 @@ class NextUpInfo(xbmcgui.WindowXMLDialog):
     item = None
     cancel = False
     watchnow = False
-    OS_MACHINE = machine()
 
     def __init__(self, *args, **kwargs):
-        if self.OS_MACHINE[0:5] == 'armv7':
+        if OS_MACHINE[0:5] == 'armv7':
             xbmcgui.WindowXMLDialog.__init__(self)
         else:
             xbmcgui.WindowXMLDialog.__init__(self, *args, **kwargs)
