@@ -5,8 +5,10 @@ import xbmcgui
 import xbmcaddon
 import json as json
 import urllib
+from platform import system
 
 ACTION_PLAYER_STOP = 13
+OS_MACHINE = machine()
     
 class StillWatchingInfo(xbmcgui.WindowXMLDialog):
 
