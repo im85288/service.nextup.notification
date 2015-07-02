@@ -206,9 +206,7 @@ class Player( xbmc.Player ):
                                     nextUpPage.setItem(episode)
                                     stillWatchingPage = StillWatchingInfo("script-nextup-notification-StillWatchingInfo.xml", addonSettings.getAddonInfo('path'), "default", "1080i")
                                     stillWatchingPage.setItem(episode)
-                                    self.logMsg('before gettime..')
                                     playTime = xbmc.Player().getTime()
-                                    self.logMsg('before totaltme.')
                                     totalTime = xbmc.Player().getTotalTime()
                                     playedinarownumber = addonSettings.getSetting("playedInARow")
                                     self.logMsg( "played in a row settings %s" % str(playedinarownumber),2)                                    
@@ -219,16 +217,12 @@ class Player( xbmc.Player ):
                                     else:
                                         self.logMsg( "showing still watching page as played in a row %s" % str(self.playedinarow),2)                                    
                                         stillWatchingPage.show()
-                                    self.logMsg('before gettime ..2')
                                     playTime = xbmc.Player().getTime()
-                                    self.logMsg('before totltime 2')
                                     totalTime = xbmc.Player().getTotalTime()
                                     while xbmc.Player().isPlaying() and (totalTime-playTime > 1) and not nextUpPage.isCancel() and not nextUpPage.isWatchNow() and not stillWatchingPage.isStillWatching() and not stillWatchingPage.isCancel():
                                         xbmc.sleep(100)
                                         try:
-                                                self.logMsg('before gettime 3')
                                                 playTime = xbmc.Player().getTime()
-                                                self.logMsg('before ttaltie..3')
                                                 totalTime = xbmc.Player().getTotalTime()
                                         except:
                                                 pass
