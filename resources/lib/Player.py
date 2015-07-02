@@ -225,11 +225,14 @@ class Player( xbmc.Player ):
                                     totalTime = xbmc.Player().getTotalTime()
                                     while xbmc.Player().isPlaying() and (totalTime-playTime > 1) and not nextUpPage.isCancel() and not nextUpPage.isWatchNow() and not stillWatchingPage.isStillWatching() and not stillWatchingPage.isCancel():
                                         xbmc.sleep(100)
-                                        self.logMsg('before gettime 3')
-                                        playTime = xbmc.Player().getTime()
-                                        self.logMsg('before ttaltie..3')
-                                        totalTime = xbmc.Player().getTotalTime()
-                                     
+                                        try:
+                                            self.logMsg('before gettime 3')
+                                            playTime = xbmc.Player().getTime()
+                                            self.logMsg('before ttaltie..3')
+                                            totalTime = xbmc.Player().getTotalTime()
+                                        except:
+                                            pass
+                                            
                                     if int(self.playedinarow) <= int(playedinarownumber):
                                         nextUpPage.close()
                                         shouldPlayDefault = not nextUpPage.isCancel()
