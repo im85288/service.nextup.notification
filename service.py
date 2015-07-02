@@ -48,13 +48,10 @@ class Service():
             if xbmc.Player().isPlaying():
                 try:
                     playTime = xbmc.Player().getTime()
-                    self.logMsg(" playtime succeeded.", 2)
                     
                     totalTime = xbmc.Player().getTotalTime()
-                    self.logMsg("totaltime succeeded.", 2)
                         
                     currentFile = xbmc.Player().getPlayingFile()
-                    self.logMsg("getplayfile succeeded.", 2)
                     
                     addonSettings = xbmcaddon.Addon(id='service.nextup.notification')
                     notificationtime = addonSettings.getSetting("autoPlaySeasonTime")
