@@ -226,12 +226,12 @@ class Player( xbmc.Player ):
                                     while xbmc.Player().isPlaying() and (totalTime-playTime > 1) and not nextUpPage.isCancel() and not nextUpPage.isWatchNow() and not stillWatchingPage.isStillWatching() and not stillWatchingPage.isCancel():
                                         xbmc.sleep(100)
                                         try:
-                                            self.logMsg('before gettime 3')
-                                            playTime = xbmc.Player().getTime()
-                                            self.logMsg('before ttaltie..3')
-                                            totalTime = xbmc.Player().getTotalTime()
+                                                self.logMsg('before gettime 3')
+                                                playTime = xbmc.Player().getTime()
+                                                self.logMsg('before ttaltie..3')
+                                                totalTime = xbmc.Player().getTotalTime()
                                         except:
-                                            pass
+                                                pass
                                             
                                     if int(self.playedinarow) <= int(playedinarownumber):
                                         nextUpPage.close()
