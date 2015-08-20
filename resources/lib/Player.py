@@ -98,18 +98,23 @@ class Player( xbmc.Player ):
     
     	return show_npid, ep_npid
     
-    def findNextEpisode(self, result):
+    def findNextEpisode(self, result, currentFile, includeWatched):
         self.logMsg("Find next episode called", 1)
         position = 0
         for episode in result[ "result" ][ "episodes" ]:
             # find position of current episode
             if self.currentepisodeid == episode["episodeid"]:
-               # found a match so add 1 for the next and get out of here
-               position = position + 1
-               break
-            else:
-               # no match found continue
-               position = position + 1
+                # found a match so add 1 for the next and get out of here
+                position = position + 1
+                break
+            position = position + 1
+        #check if it may be a multi-part episode
+        while result[ "result" ][ "episodes" ][position]["file"] == currentFile:
+            position = position + 1
+        # skip already watched episodes?
+        while not includeWatched and result[ "result" ][ "episodes" ][position]["playcount"] > 1:
+            position = position + 1
+
         # now return the episode
         self.logMsg("Find next episode found next episode in position: "+str(position), 1)  
         try:
@@ -171,12 +176,9 @@ class Player( xbmc.Player ):
                     if self.currenttvshowid != tvshowid: 
                         self.currenttvshowid = tvshowid
                         self.playedinarow = 1
-                    includeWatched = addonSettings.getSetting("includeWatched") == "true"
-                    if includeWatched == True:                 
-                        result = xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "VideoLibrary.GetEpisodes", "params": {"tvshowid": %d, "properties": [ "title", "playcount", "season", "episode", "showtitle", "plot", "file", "rating", "resume", "tvshowid", "art", "firstaired", "runtime", "writer", "dateadded", "lastplayed" , "streamdetails"], "sort": {"method": "episode"}}, "id": 1}' %tvshowid)
-                    else:
-                        result = xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "VideoLibrary.GetEpisodes", "params": { "tvshowid": %d, "sort": {"method":"episode"}, "filter": {"field": "playcount", "operator": "lessthan", "value":"1"}, "properties": [ "title", "playcount", "season", "episode", "showtitle", "plot", "file", "rating", "resume", "tvshowid", "art", "firstaired", "runtime", "writer", "dateadded", "lastplayed" , "streamdetails"], "limits":{"start":1,"end":2}}, "id": "1"}' %tvshowid)    
-                        
+
+                    result = xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "VideoLibrary.GetEpisodes", "params": {"tvshowid": %d, "properties": [ "title", "playcount", "season", "episode", "showtitle", "plot", "file", "rating", "resume", "tvshowid", "art", "firstaired", "runtime", "writer", "dateadded", "lastplayed" , "streamdetails"], "sort": {"method": "episode"}}, "id": 1}' %tvshowid)
+
                     if result:      
                         result = unicode(result, 'utf-8', errors='ignore')
                         result = json.loads(result)
@@ -185,17 +187,15 @@ class Player( xbmc.Player ):
                         
                         # Find the next unwatched and the newest added episodes
                         if result.has_key( "result" ) and result[ "result" ].has_key( "episodes" ):
-                            if includeWatched == True:
-                                episode = self.findNextEpisode(result)
-                            else:
-                                episode = result[ "result" ][ "episodes" ][0]
-                                
+                            includeWatched = addonSettings.getSetting("includeWatched") == "true"
+                            episode = self.findNextEpisode(result, currentFile, includeWatched)
+
                             if episode == None:
                                  # no episode get out of here
                                  return   
                             self.logMsg( "episode details %s" % str(episode),2)
                             episodeid =  episode["episodeid"]
-                            includePlaycount = True
+
                             if includeWatched == True:
                                 includePlaycount = True
                             else:
