@@ -1,9 +1,5 @@
-import sys
 import xbmc
 import xbmcgui
-import xbmcaddon
-import json as json
-import urllib
 from platform import machine
 
 ACTION_PLAYER_STOP = 13
@@ -11,7 +7,6 @@ OS_MACHINE = machine()
 
 
 class NextUpInfo(xbmcgui.WindowXMLDialog):
-
     item = None
     cancel = False
     watchnow = False
@@ -33,7 +28,6 @@ class NextUpInfo(xbmcgui.WindowXMLDialog):
         overview = self.item['plot']
         name = self.item['title']
 
-        episodeInfo = ''
         season = self.item['season']
         episodeNum = self.item['episode']
         episodeInfo = str(season) + 'x' + str(episodeNum) + '.'
@@ -43,7 +37,6 @@ class NextUpInfo(xbmcgui.WindowXMLDialog):
         info = year
 
         # set the dialog data
-
         self.getControl(3000).setLabel(name)
         self.getControl(3001).setText(overview)
         self.getControl(3002).setLabel(episodeInfo)
@@ -74,7 +67,7 @@ class NextUpInfo(xbmcgui.WindowXMLDialog):
 
         self.getControl(3006).setImage(clearartimage)
 
-        if rating != None:
+        if rating is not None:
             self.getControl(3003).setLabel(rating)
         else:
             self.getControl(3003).setVisible(False)
@@ -133,13 +126,11 @@ class NextUpInfo(xbmcgui.WindowXMLDialog):
         if controlID == 3012:
 
             # watch now
-
             self.setWatchNow(True)
             self.close()
         elif controlID == 3013:
 
             # cancel
-
             self.setCancel(True)
             self.close()
 
