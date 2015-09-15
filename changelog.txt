@@ -1,7 +1,10 @@
+[B]1.0.9[/B]
+- Merge razzee changes
+- New default next up dialog
+
 [B]1.0.8[/B]
 - Merge bigpanda changes
 - Option to disable addon
-
 
 [B]1.0.7[/B]
 - Fix for strm files
