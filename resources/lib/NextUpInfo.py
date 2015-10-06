@@ -42,7 +42,12 @@ class NextUpInfo(xbmcgui.WindowXMLDialog):
         self.getControl(3002).setLabel(episodeInfo)
         self.getControl(3004).setLabel(info)
 
-        self.getControl(3009).setImage(image)
+        try:
+            posterControl = self.getControl(3009)
+            if posterControl != None:
+                posterControl.setImage(image)
+        except:
+            pass
 
         try:
             fanartControl = self.getControl(3005)
