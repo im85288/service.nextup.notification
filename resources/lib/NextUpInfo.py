@@ -70,7 +70,12 @@ class NextUpInfo(xbmcgui.WindowXMLDialog):
         except:
             pass
 
-        self.getControl(3006).setImage(clearartimage)
+        try:
+            clearartimageControl = self.getControl(3006)
+            if clearartimageControl != None:
+                self.getControl(3006).setImage(clearartimage)
+        except:
+            pass
 
         if rating is not None:
             self.getControl(3003).setLabel(rating)
