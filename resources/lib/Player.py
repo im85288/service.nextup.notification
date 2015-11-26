@@ -6,6 +6,7 @@ import Utils as utils
 from ClientInformation import ClientInformation
 from NextUpInfo import NextUpInfo
 from StillWatchingInfo import StillWatchingInfo
+from UnwatchedInfo import UnwatchedInfo
 
 
 # service class for playback monitoring
@@ -24,6 +25,8 @@ class Player(xbmc.Player):
     currenttvshowid = None
     currentepisodeid = None
     playedinarow = 1
+    fields_base = '"dateadded", "file", "lastplayed","plot", "title", "art", "playcount",'
+    fields_tvshows = fields_base + '"sorttitle", "mpaa", "premiered", "year", "episode", "watchedepisodes", "votes", "rating", "studio", "season", "genre", "episodeguide", "tag", "originaltitle", "imdbnumber"'
 
     def __init__(self, *args):
         self.__dict__ = self._shared_state
@@ -120,6 +123,50 @@ class Player(xbmc.Player):
 
         return episode
 
+    def displayRandomUnwatched(self):
+        currentFile = xbmc.Player().getPlayingFile()
+
+        # Get the active player
+        result = xbmc.executeJSONRPC('{"jsonrpc": "2.0", "id": 1, "method": "Player.GetActivePlayers"}')
+        result = unicode(result, 'utf-8', errors='ignore')
+        self.logMsg("Got active player " + result, 2)
+        result = json.loads(result)
+
+        # Seems to work too fast loop whilst waiting for it to become active
+        while not result["result"]:
+            result = xbmc.executeJSONRPC('{"jsonrpc": "2.0", "id": 1, "method": "Player.GetActivePlayers"}')
+            result = unicode(result, 'utf-8', errors='ignore')
+            self.logMsg("Got active player " + result, 2)
+            result = json.loads(result)
+
+        if 'result' in result and result["result"][0] is not None:
+            playerid = result["result"][0]["playerid"]
+
+            # Get details of the playing media
+            self.logMsg("Getting details of playing media", 1)
+            result = xbmc.executeJSONRPC(
+                '{"jsonrpc": "2.0", "id": 1, "method": "Player.GetItem", "params": {"playerid": ' + str(
+                    playerid) + ', "properties": ["showtitle", "tvshowid", "episode", "season", "playcount"] } }')
+            result = unicode(result, 'utf-8', errors='ignore')
+            self.logMsg("Got details of playing media" + result, 2)
+
+            result = json.loads(result)
+            if 'result' in result:
+                itemtype = result["result"]["item"]["type"]
+                if itemtype == "episode":
+                    # playing an episode so find a random unwatched show
+                    self.logMsg("Looking up tvshow", 2)
+                    tvshow = utils.getJSON('VideoLibrary.GetTVShows', '{ "sort": { "order": "descending", "method": "random" }, "filter": {"and": [{"operator":"is", "field":"playcount", "value":"0"}]}, "properties": [ %s ],"limits":{"end":25} }' %self.fields_tvshows)
+                    self.logMsg("Got tvshow" + str(tvshow), 2)
+                    addonSettings = xbmcaddon.Addon(id='service.nextup.notification')
+                    unwatchedPage = UnwatchedInfo("script-nextup-notification-UnwatchedInfo.xml",
+                                            addonSettings.getAddonInfo('path'), "default", "1080i")
+                    unwatchedPage.setItem(tvshow[0])
+                    self.logMsg("Calling display unwatched", 2)
+                    unwatchedPage.show()
+                    xbmc.sleep(10000)
+                    self.logMsg("Calling close unwatched", 2)
+                    unwatchedPage.close()
 
     def autoPlayPlayback(self):
         currentFile = xbmc.Player().getPlayingFile()
