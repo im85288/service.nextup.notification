@@ -18,20 +18,25 @@ class UnwatchedInfo(xbmcgui.WindowXMLDialog):
     def onInit(self):
         self.action_exitkeys_id = [10, 13]
 
-        clearlogo = self.item['art'].get('clearlogo', '')
+        clearlogo = self.item['art'].get('tvshow.clearlogo', '')
         overview = self.item['plot']
         name = self.item['title']
 
         rating = str(round(float(self.item['rating'])))
 
+        season = self.item['season']
+        episodeNum = self.item['episode']
+        episodeInfo = str(season) + 'x' + str(episodeNum) + '.'
+
         # set the dialog data
         self.getControl(5000).setLabel(name)
         self.getControl(5001).setText(overview)
+        self.getControl(5002).setLabel(episodeInfo)
 
         try:
-            clearartimageControl = self.getControl(5002)
+            clearartimageControl = self.getControl(5004)
             if clearartimageControl != None:
-                self.getControl(5002).setImage(clearlogo)
+                self.getControl(5004).setImage(clearlogo)
         except:
             pass
 
