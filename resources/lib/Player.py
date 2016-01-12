@@ -224,6 +224,27 @@ class Player(xbmc.Player):
                         self.logMsg("Calling close unwatched", 2)
                         unwatchedPage.close()
 
+    def strm_query(self, result):
+             try:
+                  self.logMsg('strm_query start' )
+                  Myitemtype = result["result"]["item"]["type"]
+                  if Myitemtype == "episode":
+                  	return True
+                  Myepisodenumber = result["result"]["item"]["episode"]
+    	          Myseasonid = result["result"]["item"]["season"]
+    	          Mytvshowid = result["result"]["item"]["tvshowid"]
+    	          Myshowtitle = result["result"]["item"]["showtitle"]
+    	          self.logMsg('strm_query end' )
+     
+                  if Mytvshowid == -1:
+                     	return True
+     
+                  else:
+                        return False
+             except:
+                 self.logMsg('strm_query except' )
+                 return False
+
     def autoPlayPlayback(self):
         currentFile = xbmc.Player().getPlayingFile()
 
@@ -254,22 +275,27 @@ class Player(xbmc.Player):
             result = json.loads(result)
             if 'result' in result:
                 itemtype = result["result"]["item"]["type"]
-                if itemtype == "episode":
-                    # Get the next up episode
-                    addonSettings = xbmcaddon.Addon(id='service.nextup.notification')
-                    playMode = addonSettings.getSetting("autoPlayMode")
-                    currentepisodenumber = result["result"]["item"]["episode"]
-                    currentseasonid = result["result"]["item"]["season"]
-                    currentshowtitle = result["result"]["item"]["showtitle"]
-                    tvshowid = result["result"]["item"]["tvshowid"]
-
-                    # I am a STRM ###
-                    if tvshowid == -1:
-                        tvshowid, episodeid = self.iStream_fix(tvshowid, currentshowtitle, currentepisodenumber,
-                                                               currentseasonid)
-                        currentepisodeid = episodeid
-                    else:
-                        currentepisodeid = result["result"]["item"]["id"]
+                
+            if self.strm_query(result):
+		        addonSettings = xbmcaddon.Addon(id='service.nextup.notification')
+    			playMode = addonSettings.getSetting("autoPlayMode")
+    			currentepisodenumber = result["result"]["item"]["episode"]
+    			currentseasonid = result["result"]["item"]["season"]
+    			currentshowtitle = result["result"]["item"]["showtitle"]
+    			tvshowid = result["result"]["item"]["tvshowid"]
+			
+    			if (itemtype == "episode"):
+    			    # Get the next up episode
+    			    currentepisodeid = result["result"]["item"]["id"]
+    			elif tvshowid == -1:
+    			    # I am a STRM ###
+    			    tvshowid, episodeid = self.iStream_fix(tvshowid, currentshowtitle, currentepisodenumber,currentseasonid)						       
+    			    currentepisodeid = episodeid
+    			else:
+    			    # wtf am i doing here error.. ####
+    			    self.logMsg("Error: cannot determine if episode" , 1)
+    			    return
+			
 
                     self.currentepisodeid = currentepisodeid
                     self.logMsg("Getting details of next up episode for tvshow id: " + str(tvshowid), 1)
