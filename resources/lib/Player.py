@@ -56,8 +56,7 @@ class Player(xbmc.Player):
             self.logMsg(json.loads(result), 1)
             return json.loads(result)
 
-
-    def onPlayBackStarted( self ):
+    def onPlayBackStarted(self):
         # Will be called when xbmc starts playing a file
         WINDOW = xbmcgui.Window(10000)
         WINDOW.clearProperty("NextUpNotification.NowPlaying.DBID")
@@ -90,13 +89,13 @@ class Player(xbmc.Player):
             if 'result' in result:
                 itemtype = result["result"]["item"]["type"]
                 if itemtype == "episode":
-                    WINDOW.setProperty("NextUpNotification.NowPlaying.Type",itemtype)
+                    WINDOW.setProperty("NextUpNotification.NowPlaying.Type", itemtype)
                     tvshowid = result["result"]["item"]["tvshowid"]
-                    WINDOW.setProperty("NextUpNotification.NowPlaying.DBID",str(tvshowid))
+                    WINDOW.setProperty("NextUpNotification.NowPlaying.DBID", str(tvshowid))
                 elif itemtype == "movie":
-                    WINDOW.setProperty("NextUpNotification.NowPlaying.Type",itemtype)
+                    WINDOW.setProperty("NextUpNotification.NowPlaying.Type", itemtype)
                     id = result["result"]["item"]["id"]
-                    WINDOW.setProperty("NextUpNotification.NowPlaying.DBID",str(id))
+                    WINDOW.setProperty("NextUpNotification.NowPlaying.DBID", str(id))
 
     def iStream_fix(self, show_npid, showtitle, episode_np, season_np):
 
@@ -204,19 +203,19 @@ class Player(xbmc.Player):
                     if genres:
                         genretitle = genres[0]
                         self.logMsg("Looking up tvshow for genre " + genretitle, 2)
-                        tvshow = utils.getJSON('VideoLibrary.GetTVShows', '{ "sort": { "order": "descending", "method": "random" }, "filter": {"and": [{"operator":"is", "field":"genre", "value":"%s"}, {"operator":"is", "field":"playcount", "value":"0"}]}, "properties": [ %s ],"limits":{"end":1} }' %(genretitle,self.fields_tvshows))
+                        tvshow = utils.getJSON('VideoLibrary.GetTVShows', '{ "sort": { "order": "descending", "method": "random" }, "filter": {"and": [{"operator":"is", "field":"genre", "value":"%s"}, {"operator":"is", "field":"playcount", "value":"0"}]}, "properties": [ %s ],"limits":{"end":1} }' % (genretitle, self.fields_tvshows))
                     if not tvshow:
                         self.logMsg("Looking up tvshow without genre", 2)
-                        tvshow = utils.getJSON('VideoLibrary.GetTVShows', '{ "sort": { "order": "descending", "method": "random" }, "filter": {"and": [{"operator":"is", "field":"playcount", "value":"0"}]}, "properties": [ %s ],"limits":{"end":1} }' %self.fields_tvshows)
+                        tvshow = utils.getJSON('VideoLibrary.GetTVShows', '{ "sort": { "order": "descending", "method": "random" }, "filter": {"and": [{"operator":"is", "field":"playcount", "value":"0"}]}, "properties": [ %s ],"limits":{"end":1} }' % self.fields_tvshows)
                     self.logMsg("Got tvshow" + str(tvshow), 2)
                     tvshowid = tvshow[0]["tvshowid"]
-                    episode = utils.getJSON('VideoLibrary.GetEpisodes', '{ "tvshowid": %d, "sort": {"method":"episode"}, "filter": {"and": [ {"field": "playcount", "operator": "lessthan", "value":"1"}, {"field": "season", "operator": "greaterthan", "value": "0"} ]}, "properties": [ %s ], "limits":{"end":1}}' %(tvshowid, self.fields_episodes))
+                    episode = utils.getJSON('VideoLibrary.GetEpisodes', '{ "tvshowid": %d, "sort": {"method":"episode"}, "filter": {"and": [ {"field": "playcount", "operator": "lessthan", "value":"1"}, {"field": "season", "operator": "greaterthan", "value": "0"} ]}, "properties": [ %s ], "limits":{"end":1}}' % (tvshowid, self.fields_episodes))
 
                     if episode:
                         self.logMsg("Got details of next up episode %s" % str(episode), 2)
                         addonSettings = xbmcaddon.Addon(id='service.nextup.notification')
                         unwatchedPage = UnwatchedInfo("script-nextup-notification-UnwatchedInfo.xml",
-                                                    addonSettings.getAddonInfo('path'), "default", "1080i")
+                                                      addonSettings.getAddonInfo('path'), "default", "1080i")
                         unwatchedPage.setItem(episode[0])
                         self.logMsg("Calling display unwatched", 2)
                         unwatchedPage.show()
@@ -350,7 +349,7 @@ class Player(xbmc.Player):
                                 else:
                                     self.playedinarow += 1
                                 if (shouldPlayDefault and playMode == "0") or (
-                                        shouldPlayNonDefault and playMode == "1"):
+                                            shouldPlayNonDefault and playMode == "1"):
                                     self.logMsg("playing media episode id %s" % str(episodeid), 2)
                                     # Play media
                                     xbmc.executeJSONRPC(

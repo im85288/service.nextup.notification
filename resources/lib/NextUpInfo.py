@@ -33,7 +33,7 @@ class NextUpInfo(xbmcgui.WindowXMLDialog):
         episodeNum = self.item['episode']
         episodeInfo = str(season) + 'x' + str(episodeNum) + '.'
 
-        rating = str(round(float(self.item['rating'])))
+        rating = str(round(float(self.item['rating']),1))
         year = self.item['firstaired']
         info = year
 
