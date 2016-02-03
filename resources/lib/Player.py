@@ -283,6 +283,7 @@ class Player(xbmc.Player):
                 currentshowtitle = result["result"]["item"]["showtitle"]
                 tvshowid = result["result"]["item"]["tvshowid"]
                 shortplayMode = addonSettings.getSetting("shortPlayMode")
+                shortplayNotification= addonSettings.getSetting("shortPlayNotification")
                 shortplayLength = int(addonSettings.getSetting("shortPlayLength") * 60)
 
 
@@ -348,6 +349,9 @@ class Player(xbmc.Player):
                         self.logMsg("played in a row %s" % str(self.playedinarow), 2)
                         if shortplayLength >= int(totalTime) and shortplayMode == "true":
                             self.logMsg("autoplaying short video - %s" % str(self.playedinarow), 2)
+                            if shortplayNotification == "true":
+                                self.logMsg("showing notification for short videos")
+                                nextUpPage.show()
                         elif int(self.playedinarow) <= int(playedinarownumber):
                             self.logMsg(
                                 "showing next up page as played in a row is %s" % str(self.playedinarow), 2)
