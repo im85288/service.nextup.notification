@@ -17,4 +17,5 @@
     <string id="30016">Display random unwatched notification</string>
     <string id="30017">Automatically play short videos (no notification)</string>
     <string id="30018">Maximum length for automatic short video play (in minutes)</string>
+    <string id="30019">Show on-screen notification during short video autoplay</string>
 </strings>
