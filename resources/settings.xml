@@ -7,11 +7,12 @@
         <setting id="includeWatched" type="bool" label="30013" default="false" visible="true" enable="true"/>
         <setting id="displayRandomUnwatched" type="bool" label="30016" default="false" visible="true" enable="true"/>
         <setting id="displayRandomUnwatchedTime" type="number" label="30015" default="600" visible="eq(-1,true)" enable="true"/>
-        <setting id="shortPlayMode" type="bool" label="30017" default="false" visible="true" enable="true"/>
-        <setting id="shortPlayLength" type="number" label="30018" default="10" visible="true" enable="true"/>
     </category>
     <category label="30004">
         <setting id="disableNextUp" type="bool" label="30014" default="false" visible="true" enable="true"/>
         <setting id="logLevel" type="enum" label="30002" values="None|Info|Debug" default="0"/>
+        <setting id="shortPlayMode" type="bool" label="30017" default="false" visible="true" enable="true"/>
+        <setting id="shortPlayLength" type="number" label="30018" default="10" visible="true" enable="true"/>
+        <setting id="shortPlayNotification" type="bool" label="30019" default="false" visible="true" enable="true"/>
     </category>
 </settings>
