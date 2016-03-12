@@ -4,6 +4,7 @@ import xbmcaddon
 import xbmc
 import xbmcgui
 import Utils as utils
+import AddonSignals
 from ClientInformation import ClientInformation
 from NextUpInfo import NextUpInfo
 from StillWatchingInfo import StillWatchingInfo
@@ -393,6 +394,9 @@ class Player(xbmc.Player):
                                 
                         if (shouldPlayDefault and playMode == "0") or (shouldPlayNonDefault and playMode == "1"):
                             self.logMsg("playing media episode id %s" % str(episodeid), 2)
+                            # Signal to trakt previous episode watched
+                            AddonSignals.sendSignal("NEXTUPWATCHEDSIGNAL", {'episodeid': self.currentepisodeid})
+
                             # Play media
                             xbmc.executeJSONRPC(
                                 '{ "jsonrpc": "2.0", "id": 0, "method": "Player.Open", '
