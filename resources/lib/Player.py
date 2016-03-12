@@ -284,7 +284,7 @@ class Player(xbmc.Player):
                 tvshowid = result["result"]["item"]["tvshowid"]
                 shortplayMode = addonSettings.getSetting("shortPlayMode")
                 shortplayNotification= addonSettings.getSetting("shortPlayNotification")
-                shortplayLength = int(addonSettings.getSetting("shortPlayLength") * 60)
+                shortplayLength = int(addonSettings.getSetting("shortPlayLength")) * 60
 
 
                 if (itemtype == "episode"):
@@ -344,22 +344,23 @@ class Player(xbmc.Player):
                         stillWatchingPage.setItem(episode)
                         playedinarownumber = addonSettings.getSetting("playedInARow")
                         playTime = xbmc.Player().getTime()
-                        totalTime = xbmc.Player().getTotalTime()
+                        totalTime =  xbmc.Player().getTotalTime()
                         self.logMsg("played in a row settings %s" % str(playedinarownumber), 2)
                         self.logMsg("played in a row %s" % str(self.playedinarow), 2)
-                        if shortplayLength >= int(totalTime) and shortplayMode == "true":
-                            self.logMsg("autoplaying short video - %s" % str(self.playedinarow), 2)
-                            if shortplayNotification == "true":
-                                self.logMsg("showing notification for short videos")
-                                nextUpPage.show()
-                        elif int(self.playedinarow) <= int(playedinarownumber):
+                        if int(self.playedinarow) <= int(playedinarownumber):
                             self.logMsg(
-                                "showing next up page as played in a row is %s" % str(self.playedinarow), 2)
-                            nextUpPage.show()
+                                "showing next up page as played in a row is %s" % str(self.playedinarow), 2)                         
+                            if (shortplayNotification == "false") and (shortplayLength >= totalTime) and (shortplayMode == "true"):
+                                self.logMsg("hiding notification for short videos")
+                            else:
+	                            nextUpPage.show()
                         else:
                             self.logMsg(
                                 "showing still watching page as played in a row %s" % str(self.playedinarow), 2)
-                            stillWatchingPage.show()
+                            if (shortplayNotification == "false") and (shortplayLength >= totalTime) and (shortplayMode == "true"):
+                                self.logMsg("hiding notification for short videos")
+                            else:
+                                stillWatchingPage.show()
                         while xbmc.Player().isPlaying() and (
                                         totalTime - playTime > 1) and not nextUpPage.isCancel() and not nextUpPage.isWatchNow() and not stillWatchingPage.isStillWatching() and not stillWatchingPage.isCancel():
                             xbmc.sleep(100)
@@ -368,27 +369,29 @@ class Player(xbmc.Player):
                                 totalTime = xbmc.Player().getTotalTime()
                             except:
                                 pass
-                        if int(self.playedinarow) <= int(playedinarownumber):
-                            nextUpPage.close()
-                            shouldPlayDefault = not nextUpPage.isCancel()
-                            shouldPlayNonDefault = nextUpPage.isWatchNow()
-                        else:
-                            stillWatchingPage.close()
-                            shouldPlayDefault = stillWatchingPage.isStillWatching()
-                            shouldPlayNonDefault = stillWatchingPage.isStillWatching()
-
-                        autoPlayShortVideo = "false"
                         if shortplayLength >= totalTime and shortplayMode == "true":
                             #play short video and don't add to playcount
-                            autoPlayShortVideo = "true"
                             self.playedinarow += 0
                             self.logMsg("Continuing short video autoplay - %s")
-                        elif nextUpPage.isWatchNow() or stillWatchingPage.isStillWatching():
-                            self.playedinarow = 1
+                            if nextUpPage.isWatchNow() or stillWatchingPage.isStillWatching():
+                                self.playedinarow = 1
+                            shouldPlayDefault = not nextUpPage.isCancel()
                         else:
-                            self.playedinarow += 1
-                        if (shouldPlayDefault and playMode == "0") or (
-                                    shouldPlayNonDefault and playMode == "1") or (autoPlayShortVideo == "true"):
+                            if int(self.playedinarow) <= int(playedinarownumber):
+                                nextUpPage.close()
+                                shouldPlayDefault = not nextUpPage.isCancel()
+                                shouldPlayNonDefault = nextUpPage.isWatchNow()
+                            else:
+                                stillWatchingPage.close()
+                                shouldPlayDefault = stillWatchingPage.isStillWatching()
+                                shouldPlayNonDefault = stillWatchingPage.isStillWatching()
+                        
+                            if nextUpPage.isWatchNow() or stillWatchingPage.isStillWatching():
+                                self.playedinarow = 1
+                            else:
+                                self.playedinarow += 1
+                                
+                        if (shouldPlayDefault and playMode == "0") or (shouldPlayNonDefault and playMode == "1"):
                             self.logMsg("playing media episode id %s" % str(episodeid), 2)
                             # Play media
                             xbmc.executeJSONRPC(
