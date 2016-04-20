@@ -21,7 +21,7 @@ class Service():
         addonName = self.addonName
 
         self.logMsg("Starting NextUp Service", 0)
-        self.logMsg("======== START %s ========" % addonName, 0)
+        self.logMsg("========  START %s  ========" % addonName, 0)
         self.logMsg("KODI Version: %s" % xbmc.getInfoLabel("System.BuildVersion"), 0)
         self.logMsg("%s Version: %s" % (addonName, self.clientInfo.getVersion()), 0)
         self.logMsg("Platform: %s" % (self.clientInfo.getPlatform()), 0)
