@@ -18,10 +18,6 @@
 					<effect type="zoom" start="100" end="20" delay="0" tween="sine" time="2500" />
 					<effect type="slide" start="0,0" end="0,-1000" delay="0" tween="sine" time="1000" />
 				</animation>
-				<control type="image">
-					<animation effect="fade" start="100" end="97" time="200" condition="true">Conditional</animation>
-					<texture border="5" colordiffuse="ff000000">box.png</texture>
-				</control>
 				<control type="group">
 					<left>5</left>
 					<right>5</right>
