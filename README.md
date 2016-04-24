@@ -9,7 +9,7 @@ Configuration:
 Skinners:
 
   - There is a script-nextup-notification-NextUpInfo.xml and script-nextup-notification-StillWatchingInfo.xml file located in default/1080i/ simply copy this to your skin folder and adjust it how you like it. 
-  
+  - New there is now script-nextup-notification-UnwatchedInfo.xml which by default shows a logo of an unwatched episode after 10 minutes for 10 seconds
       Controls Available:
   
       - script-nextup-notification-NextUpInfo.xml
