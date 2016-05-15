@@ -26,7 +26,7 @@ class NextUpInfo(xbmcgui.WindowXMLDialog):
         landscapeimage = self.item['art'].get('tvshow.landscape', '')
         fanartimage = self.item['art'].get('tvshow.fanart', '')
         overview = self.item['plot']
-        tvshowtitle = self.item['tvshowtitle']
+        tvshowtitle = self.item['showtitle']
         name = self.item['title']
         playcount = self.item['playcount']
 
@@ -44,6 +44,10 @@ class NextUpInfo(xbmcgui.WindowXMLDialog):
         self.getControl(3002).setLabel(episodeInfo)
         self.getControl(3004).setLabel(info)
 
+        if rating is not None:
+            self.getControl(3003).setLabel(rating)
+        else:
+            self.getControl(3003).setVisible(False)
 
         try:
             tvShowControl = self.getControl(3007)
@@ -86,11 +90,6 @@ class NextUpInfo(xbmcgui.WindowXMLDialog):
                 self.getControl(3006).setImage(clearartimage)
         except:
             pass
-
-        if rating is not None:
-            self.getControl(3003).setLabel(rating)
-        else:
-            self.getControl(3003).setVisible(False)
 
         try:
             seasonControl = self.getControl(3015)
