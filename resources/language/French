@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<strings>
+   <string id="30001">Nombre de secondes avant d'afficher la notification</string>
+   <string id="30002">Niveau du Débogage :</string>
+   <string id="30003">Paramètres</string>
+   <string id="30004">Paramètres Avancés</string>
+   <string id="30005">Action par défaut quand rien n'est sélectionné</string>
+   <string id="30006">Regarder</string>
+   <string id="30007">Appuyez sur Annuler pour arrêter la lecture automatique du prochain épisode...</string>
+   <string id="30008">Suivant</string>
+   <string id="30009">Nombre d'épisodes avant de demander de poursuivre</string>
+   <string id="30010">Continuer à regarder ?</string>
+   <string id="30012">Appuyez sur Continuer pour regarder l'épisode suivant :</string>
+   <string id="30013">Inclure les épisodes vus</string>
+   <string id="30014">Désactiver NextUp (redémarrage nécessaire)</string>
+   <string id="30015">Nombre de secondes avant d'afficher la notification de la série TV non vu aléatoire</string>
+   <string id="30016">Afficher une notification d'une série TV non vu aléatoire</string>
+   <string id="30017">Lancer automatiquement les vidéos courtes</string>
+   <string id="30018">Durée maximale des vidéos courtes (en minutes)</string>
+   <string id="30019">Afficher la notification lors de la lecture des vidéos courtes</string>
+</strings>
