@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <settings>
     <category label="30003">
+        <setting id="showPostPlay" type="bool" label="30022" default="true" visible="true" enable="true"/>
+        <setting id="showPostPlayPlot" type="bool" label="30023" default="true" visible="eq(-1,true)" enable="true"/>
         <setting id="autoPlaySeasonTime" type="number" label="30001" default="30" visible="true" enable="true"/>
         <setting id="autoPlayMode" type="enum" label="30005" values="Play|Don't Play" default="0"/>
         <setting id="playedInARow" type="number" label="30009" default="3" visible="true" enable="true"/>
