@@ -11,6 +11,7 @@ from NextUpInfo import NextUpInfo
 from StillWatchingInfo import StillWatchingInfo
 from UnwatchedInfo import UnwatchedInfo
 from PostPlayInfo import PostPlayInfo
+from ga_client import GoogleAnalytics
 
 
 LIBRARY = library.LibraryFunctions()
@@ -64,7 +65,8 @@ class Player(xbmc.Player):
     def onPlayBackStarted(self):
         # Will be called when xbmc starts playing a file
         self.postplaywindow = None
-
+        ga = GoogleAnalytics()
+        ga.sendEventData("PlayAction", "Started")
         WINDOW = xbmcgui.Window(10000)
         WINDOW.clearProperty("NextUpNotification.NowPlaying.DBID")
         WINDOW.clearProperty("NextUpNotification.NowPlaying.Type")
@@ -109,6 +111,8 @@ class Player(xbmc.Player):
     def onPlayBackEnded(self):
         self.logMsg("playback ended ", 2)
         if self.postplaywindow is not None:
+            ga = GoogleAnalytics()
+            ga.sendEventData("PlayAction", "Ended", "Post Play Shown")
             self.showPostPlay()
 
     def iStream_fix(self, show_npid, showtitle, episode_np, season_np):
