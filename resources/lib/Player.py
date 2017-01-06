@@ -113,6 +113,7 @@ class Player(xbmc.Player):
         if self.postplaywindow is not None:
             ga = GoogleAnalytics()
             ga.sendEventData("PlayAction", "Ended", "Post Play Shown")
+            ga.sendScreenView("Post Play Screen")
             self.showPostPlay()
 
     def iStream_fix(self, show_npid, showtitle, episode_np, season_np):
@@ -603,6 +604,8 @@ class Player(xbmc.Player):
                         totalTime =  xbmc.Player().getTotalTime()
                         self.logMsg("played in a row settings %s" % str(playedinarownumber), 2)
                         self.logMsg("played in a row %s" % str(self.playedinarow), 2)
+
+                        ga = GoogleAnalytics()
                         if int(self.playedinarow) <= int(playedinarownumber):
                             self.logMsg(
                                 "showing next up page as played in a row is %s" % str(self.playedinarow), 2)
@@ -610,6 +613,7 @@ class Player(xbmc.Player):
                                 self.logMsg("hiding notification for short videos")
                             else:
                                 nextUpPage.show()
+                                ga.sendScreenView("Next Up Screen")
                         else:
                             self.logMsg(
                                 "showing still watching page as played in a row %s" % str(self.playedinarow), 2)
@@ -617,6 +621,7 @@ class Player(xbmc.Player):
                                 self.logMsg("hiding notification for short videos")
                             else:
                                 stillWatchingPage.show()
+                                ga.sendScreenView("Still Watching Screen")
                         while xbmc.Player().isPlaying() and (
                                         totalTime - playTime > 1) and not nextUpPage.isCancel() and not nextUpPage.isWatchNow() and not stillWatchingPage.isStillWatching() and not stillWatchingPage.isCancel():
                             xbmc.sleep(100)

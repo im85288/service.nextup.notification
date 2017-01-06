@@ -142,6 +142,14 @@ class GoogleAnalytics():
             data['el'] = eventLabel # Event Label
         
         self.sendData(data)
+
+    def sendScreenView(self, name):
+
+        data = self.getBaseData()
+        data['t'] = 'screenview' # action type
+        data['cd'] = name
+
+        self.sendData(data)
             
     def sendData(self, data):
 
