@@ -97,4 +97,6 @@ class ClientInformation():
 
         guid.close()
 
+        WINDOW.setProperty('kodi_deviceId',client_id)
+
         return client_id
