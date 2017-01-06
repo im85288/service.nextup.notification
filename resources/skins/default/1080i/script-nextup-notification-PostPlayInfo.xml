@@ -567,7 +567,7 @@
 										<top>10</top>
 										<width>360</width>
 										<height>360</height>
-										<texture fallback="DefaultTVShows.png" diffuse="diffuse/roundedposterleftonly.png">$INFO[ListItem.Art(tvshow.fanart)]</texture>
+										<texture fallback="DefaultTVShows.png" diffuse="diffuse/roundedposterleftonly.png">$INFO[ListItem.Art(tvshow.poster)]</texture>
 										<aspectratio aligny="center" align="center">stretch</aspectratio>
 									</control>
 									<control type="group">
