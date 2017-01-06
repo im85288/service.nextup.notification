@@ -2,6 +2,7 @@ import xbmcaddon
 import xbmc
 import xbmcgui
 import os
+import time
 
 cwd = xbmcaddon.Addon(id='service.nextup.notification').getAddonInfo('path')
 BASE_RESOURCE_PATH = xbmc.translatePath(os.path.join(cwd, 'resources', 'lib'))
@@ -17,6 +18,7 @@ class Service():
     clientInfo = ClientInformation()
     addonName = clientInfo.getAddonName()
     WINDOW = xbmcgui.Window(10000)
+    lastMetricPing = time.time()
 
     def __init__(self, *args):
         addonName = self.addonName
@@ -54,6 +56,13 @@ class Service():
                 break
             if xbmc.Player().isPlaying():
                 try:
+                    # ping metrics server to keep sessions alive while playing
+                    # ping every 5 min
+                    timeSinceLastPing = time.time() - self.lastMetricPing
+                    if(timeSinceLastPing > 300):
+                        self.lastMetricPing = time.time()
+                        ga.sendEventData("PlayAction", "PlayPing")
+
                     playTime = xbmc.Player().getTime()
 
                     totalTime = xbmc.Player().getTotalTime()
