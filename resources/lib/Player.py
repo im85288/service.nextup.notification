@@ -111,10 +111,7 @@ class Player(xbmc.Player):
     def onPlayBackEnded(self):
         self.logMsg("playback ended ", 2)
         if self.postplaywindow is not None:
-            ga = GoogleAnalytics()
-            ga.sendEventData("PlayAction", "Ended", "Post Play Shown")
-            ga.sendScreenView("Post Play Screen")
-            self.showPostPlay()
+           self.showPostPlay()
 
     def iStream_fix(self, show_npid, showtitle, episode_np, season_np):
 
@@ -380,7 +377,8 @@ class Player(xbmc.Player):
                         totalTime =  xbmc.Player().getTotalTime()
                         self.logMsg("played in a row settings %s" % str(playedinarownumber), 2)
                         self.logMsg("played in a row %s" % str(self.playedinarow), 2)
-
+                        ga = GoogleAnalytics()
+                        ga.sendScreenView("Post Play Screen")
                         if int(self.playedinarow) <= int(playedinarownumber):
                             if (shortplayNotification == "false") and (shortplayLength >= totalTime) and (shortplayMode == "true"):
                                 self.logMsg("hiding notification for short videos")
@@ -392,7 +390,7 @@ class Player(xbmc.Player):
                             else:
                                 postPlayPage.setStillWatching(True)
                         while xbmc.Player().isPlaying() and (
-                                        totalTime - playTime > 5):
+                                        totalTime - playTime > 8):
                             xbmc.sleep(100)
                             try:
                                 playTime = xbmc.Player().getTime()
@@ -401,7 +399,6 @@ class Player(xbmc.Player):
                                 pass
 
                         self.postplaywindow = postPlayPage
-
 
     def showPostPlay(self):
         self.logMsg("showing postplay window")
