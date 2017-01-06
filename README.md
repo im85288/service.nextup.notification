@@ -46,8 +46,7 @@ Skinners (PostPlayMode):
            - Window.getProperty('previous.rating') - previous episode rating
            - Window.getProperty('previous.duration') - previous episode duration
            - Window.getProperty('showplot') - not empy when should show plot
-           - Window.getProperty('stillwatching') - not empty when entered still watching mode
-                                                       
+           - Window.getProperty('stillwatching') - not empty when entered still watching mode                                        
 
 Skinners (Non PostPlayMode):
   
