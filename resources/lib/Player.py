@@ -11,8 +11,6 @@ from NextUpInfo import NextUpInfo
 from StillWatchingInfo import StillWatchingInfo
 from UnwatchedInfo import UnwatchedInfo
 from PostPlayInfo import PostPlayInfo
-from ga_client import GoogleAnalytics
-
 
 LIBRARY = library.LibraryFunctions()
 # service class for playback monitoring
@@ -65,8 +63,6 @@ class Player(xbmc.Player):
     def onPlayBackStarted(self):
         # Will be called when xbmc starts playing a file
         self.postplaywindow = None
-        ga = GoogleAnalytics()
-        ga.sendEventData("PlayAction", "Started")
         WINDOW = xbmcgui.Window(10000)
         WINDOW.clearProperty("NextUpNotification.NowPlaying.DBID")
         WINDOW.clearProperty("NextUpNotification.NowPlaying.Type")
@@ -113,7 +109,7 @@ class Player(xbmc.Player):
         if self.postplaywindow is not None:
            self.showPostPlay()
 
-    def iStream_fix(self, show_npid, showtitle, episode_np, season_np):
+    def checkStrms(self, show_npid, showtitle, episode_np, season_np):
 
         # streams from iStream dont provide the showid and epid for above
         # they come through as tvshowid = -1, but it has episode no and season no and show name
@@ -330,7 +326,7 @@ class Player(xbmc.Player):
                     currentepisodeid = result["result"]["item"]["id"]
                 elif tvshowid == -1:
                     # I am a STRM ###
-                    tvshowid, episodeid = self.iStream_fix(tvshowid, currentshowtitle, currentepisodenumber, currentseasonid)
+                    tvshowid, episodeid = self.checkStrms(tvshowid, currentshowtitle, currentepisodenumber, currentseasonid)
                     currentepisodeid = episodeid
             else:
                 # wtf am i doing here error.. ####
@@ -377,8 +373,6 @@ class Player(xbmc.Player):
                         totalTime =  xbmc.Player().getTotalTime()
                         self.logMsg("played in a row settings %s" % str(playedinarownumber), 2)
                         self.logMsg("played in a row %s" % str(self.playedinarow), 2)
-                        ga = GoogleAnalytics()
-                        ga.sendScreenView("Post Play Screen")
                         if int(self.playedinarow) <= int(playedinarownumber):
                             if (shortplayNotification == "false") and (shortplayLength >= totalTime) and (shortplayMode == "true"):
                                 self.logMsg("hiding notification for short videos")
@@ -546,7 +540,7 @@ class Player(xbmc.Player):
                     currentepisodeid = result["result"]["item"]["id"]
                 elif tvshowid == -1:
                     # I am a STRM ###
-                    tvshowid, episodeid = self.iStream_fix(tvshowid, currentshowtitle, currentepisodenumber, currentseasonid)
+                    tvshowid, episodeid = self.checkStrms(tvshowid, currentshowtitle, currentepisodenumber, currentseasonid)
                     currentepisodeid = episodeid
             else:
                 # wtf am i doing here error.. ####
@@ -602,7 +596,6 @@ class Player(xbmc.Player):
                         self.logMsg("played in a row settings %s" % str(playedinarownumber), 2)
                         self.logMsg("played in a row %s" % str(self.playedinarow), 2)
 
-                        ga = GoogleAnalytics()
                         if int(self.playedinarow) <= int(playedinarownumber):
                             self.logMsg(
                                 "showing next up page as played in a row is %s" % str(self.playedinarow), 2)
@@ -610,7 +603,6 @@ class Player(xbmc.Player):
                                 self.logMsg("hiding notification for short videos")
                             else:
                                 nextUpPage.show()
-                                ga.sendScreenView("Next Up Screen")
                         else:
                             self.logMsg(
                                 "showing still watching page as played in a row %s" % str(self.playedinarow), 2)
@@ -618,7 +610,6 @@ class Player(xbmc.Player):
                                 self.logMsg("hiding notification for short videos")
                             else:
                                 stillWatchingPage.show()
-                                ga.sendScreenView("Still Watching Screen")
                         while xbmc.Player().isPlaying() and (
                                         totalTime - playTime > 1) and not nextUpPage.isCancel() and not nextUpPage.isWatchNow() and not stillWatchingPage.isStillWatching() and not stillWatchingPage.isCancel():
                             xbmc.sleep(100)
