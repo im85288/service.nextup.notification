@@ -11,8 +11,6 @@ sys.path.append(BASE_RESOURCE_PATH)
 import Utils as utils
 from Player import Player
 from ClientInformation import ClientInformation
-from ga_client import GoogleAnalytics
-
 
 class Service():
     clientInfo = ClientInformation()
@@ -27,8 +25,6 @@ class Service():
         self.logMsg("========  START %s  ========" % addonName, 0)
         self.logMsg("KODI Version: %s" % xbmc.getInfoLabel("System.BuildVersion"), 0)
         self.logMsg("%s Version: %s" % (addonName, self.clientInfo.getVersion()), 0)
-        self.logMsg("Platform: %s" % (self.clientInfo.getPlatform()), 0)
-
 
     def logMsg(self, msg, lvl=1):
         className = self.__class__.__name__
@@ -41,14 +37,6 @@ class Service():
         lastFile = None
         lastUnwatchedFile = None
 
-        ga = GoogleAnalytics()
-        ga.sendEventData("Application", "Startup")
-        try:
-            ga.sendEventData("Version", "OS", self.clientInfo.getPlatform())
-            ga.sendEventData("PlayMode", "Mode", self.clientInfo.getPlayMode())
-        except Exception:
-            pass
-
         while not monitor.abortRequested():
             # check every 5 sec
             if monitor.waitForAbort(5):
@@ -56,13 +44,6 @@ class Service():
                 break
             if xbmc.Player().isPlaying():
                 try:
-                    # ping metrics server to keep sessions alive while playing
-                    # ping every 5 min
-                    timeSinceLastPing = time.time() - self.lastMetricPing
-                    if(timeSinceLastPing > 300):
-                        self.lastMetricPing = time.time()
-                        ga.sendEventData("PlayAction", "PlayPing")
-
                     playTime = xbmc.Player().getTime()
 
                     totalTime = xbmc.Player().getTotalTime()
@@ -75,7 +56,6 @@ class Service():
                     randomunwatchedtime = addonSettings.getSetting("displayRandomUnwatchedTime")
                     displayrandomunwatched = addonSettings.getSetting("displayRandomUnwatched") == "true"
                     showpostplay = addonSettings.getSetting("showPostPlay") == "true"
-
 
                     if xbmcgui.Window(10000).getProperty("PseudoTVRunning") != "True" and not nextUpDisabled:
 
@@ -100,11 +80,6 @@ class Service():
 
                 except Exception as e:
                     self.logMsg("Exception in Playback Monitor Service: %s" % e)
-                    if not (hasattr(e, 'quiet') and e.quiet):
-                        ga = GoogleAnalytics()
-                        errStrings = ga.formatException()
-                        ga.sendEventData("Exception", errStrings[0], errStrings[1])
-                    pass
 
         self.logMsg("======== STOP %s ========" % self.addonName, 0)
 
