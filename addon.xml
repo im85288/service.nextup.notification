@@ -8,8 +8,8 @@
     </requires>
     <extension library="service.py" point="xbmc.service" start="login"/>
     <extension point="xbmc.addon.metadata">
-        <summary lang="en">Provides a netflix style nextup pop up notification</summary>
-        <description lang="en">Provides a netflix style nextup pop up notification</description>
+        <summary lang="en">Provides a postplay screen or netflix style nextup pop up notification</summary>
+        <description lang="en">Provides a postplay screen or netflix style nextup pop up notification</description>
         <disclaimer lang="en">This plugin is a standalone plugin.</disclaimer>
         <platform>all</platform>
         <language/>
