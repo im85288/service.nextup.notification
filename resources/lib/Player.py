@@ -98,63 +98,68 @@ class Player(xbmc.Player):
             result = json.loads(result)
             if 'result' in result:
                 itemtype = result["result"]["item"]["type"]
+                itemtitle = result["result"]["item"]["showtitle"]
                 if itemtype == "episode":
                     WINDOW.setProperty("NextUpNotification.NowPlaying.Type", itemtype)
                     tvshowid = result["result"]["item"]["tvshowid"]
                     WINDOW.setProperty("NextUpNotification.NowPlaying.DBID", str(tvshowid))
+                    if int(tvshowid) == -1:
+                        tvshowid = self.showtitle_to_id(title=itemtitle)
+                        self.logMsg("Fetched missing tvshowid " + str(tvshowid), 2)
                 elif itemtype == "movie":
                     WINDOW.setProperty("NextUpNotification.NowPlaying.Type", itemtype)
                     id = result["result"]["item"]["id"]
                     WINDOW.setProperty("NextUpNotification.NowPlaying.DBID", str(id))
 
+    def showtitle_to_id(self, title):
+        query = {
+                "jsonrpc": "2.0",
+                "method": "VideoLibrary.GetTVShows",
+                "params": {
+                    "properties": ["title"]
+                },
+                "id": "libTvShows"
+                }
+        try:
+            json_result = json.loads(xbmc.executeJSONRPC(json.dumps(query, encoding='utf-8')))
+            if 'result' in json_result and 'tvshows' in json_result['result']:
+                json_result = json_result['result']['tvshows']
+                for tvshow in json_result:
+                    if tvshow['label'] == title:
+                        return tvshow['tvshowid']
+            return '-1'
+        except Exception:
+            return '-1'
+
+    def get_episode_id(self, showid, showseason, showepisode):
+        showseason = int(showseason)
+        showepisode = int(showepisode)
+        episodeid = 0
+        query = {
+                "jsonrpc": "2.0",
+                "method": "VideoLibrary.GetEpisodes",
+                "params": {
+                    "properties": ["season", "episode"],
+                    "tvshowid": int(showid)
+                },
+                "id": "1"
+                }
+        try:
+            json_result = json.loads(xbmc.executeJSONRPC(json.dumps(query, encoding='utf-8')))
+            if 'result' in json_result and 'episodes' in json_result['result']:
+                json_result = json_result['result']['episodes']
+                for episode in json_result:
+                    if episode['season'] == showseason and episode['episode'] == showepisode:
+                        if 'episodeid' in episode:
+                            episodeid = episode['episodeid']
+            return episodeid
+        except Exception:
+            return episodeid
 
     def onPlayBackEnded(self):
         self.logMsg("playback ended ", 2)
         if self.postplaywindow is not None:
            self.showPostPlay()
-
-    def checkStrms(self, show_npid, showtitle, episode_np, season_np):
-
-        # streams from iStream dont provide the showid and epid for above
-        # they come through as tvshowid = -1, but it has episode no and season no and show name
-        # need to insert work around here to get showid from showname, and get epid from season and episode no's
-        # then need to ignore prevcheck
-        self.logMsg('fixing strm, data follows...')
-        self.logMsg('show_npid = ' + str(show_npid))
-        self.logMsg('showtitle = ' + str(showtitle))
-        self.logMsg('episode_np = ' + str(episode_np))
-        self.logMsg('season_np = ' + str(season_np))
-
-        show_request_all = {"jsonrpc": "2.0", "method": "VideoLibrary.GetTVShows", "params": {"properties": ["title"]},
-                            "id": "1"}
-        eps_query = {"jsonrpc": "2.0", "method": "VideoLibrary.GetEpisodes", "params": {
-            "properties": ["season", "episode", "runtime", "resume", "playcount", "tvshowid", "lastplayed", "file"],
-            "tvshowid": "1"}, "id": "1"}
-
-        ep_npid = " "
-
-        redo = True
-        count = 0
-        while redo and count < 2:  # this ensures the section of code only runs twice at most [ only runs once fine ?
-            redo = False
-            count += 1
-            if show_npid == -1 and showtitle and episode_np and season_np:
-                tmp_shows = self.json_query(show_request_all, True)
-                self.logMsg('tmp_shows = ' + str(tmp_shows))
-                if 'tvshows' in tmp_shows:
-                    for x in tmp_shows['tvshows']:
-                        if x['label'] == showtitle:
-                            show_npid = x['tvshowid']
-                            eps_query['params']['tvshowid'] = show_npid
-                            tmp_eps = self.json_query(eps_query, True)
-                            self.logMsg('tmp eps = ' + str(tmp_eps))
-                            if 'episodes' in tmp_eps:
-                                for y in tmp_eps['episodes']:
-                                    if (y['season']) == season_np and (y['episode']) == episode_np:
-                                        ep_npid = y['episodeid']
-                                        self.logMsg('playing epid stream = ' + str(ep_npid))
-
-        return show_npid, ep_npid
 
     def findNextEpisode(self, result, currentFile, includeWatched):
         self.logMsg("Find next episode called", 1)
@@ -245,6 +250,9 @@ class Player(xbmc.Player):
                         tvshow = utils.getJSON('VideoLibrary.GetTVShows', '{ "sort": { "order": "descending", "method": "random" }, "filter": {"and": [{"operator":"is", "field":"playcount", "value":"0"}]}, "properties": [ %s ],"limits":{"end":1} }' % self.fields_tvshows)
                     self.logMsg("Got tvshow" + str(tvshow), 2)
                     tvshowid = tvshow[0]["tvshowid"]
+                    if int(tvshowid) == -1:
+                        tvshowid = self.showtitle_to_id(title=itemtitle)
+                        self.logMsg("Fetched missing tvshowid " + str(tvshowid), 2)
                     episode = utils.getJSON('VideoLibrary.GetEpisodes', '{ "tvshowid": %d, "sort": {"method":"episode"}, "filter": {"and": [ {"field": "playcount", "operator": "lessthan", "value":"1"}, {"field": "season", "operator": "greaterthan", "value": "0"} ]}, "properties": [ %s ], "limits":{"end":1}}' % (tvshowid, self.fields_episodes))
 
                     if episode:
@@ -260,27 +268,6 @@ class Player(xbmc.Player):
                         self.logMsg("Calling close unwatched", 2)
                         unwatchedPage.close()
                         del monitor
-
-    def strm_query(self, result):
-        try:
-            self.logMsg('strm_query start')
-            Myitemtype = result["result"]["item"]["type"]
-            if Myitemtype == "episode":
-                return True
-            Myepisodenumber = result["result"]["item"]["episode"]
-            Myseasonid = result["result"]["item"]["season"]
-            Mytvshowid = result["result"]["item"]["tvshowid"]
-            Myshowtitle = result["result"]["item"]["showtitle"]
-            self.logMsg('strm_query end')
-
-            if Mytvshowid == -1:
-                return True
-
-            else:
-                return False
-        except:
-            self.logMsg('strm_query except')
-            return False
 
     def postPlayPlayback(self):
         currentFile = xbmc.Player().getPlayingFile()
@@ -308,12 +295,11 @@ class Player(xbmc.Player):
                     playerid) + ', "properties": ["showtitle", "tvshowid", "episode", "season", "playcount"] } }')
             result = unicode(result, 'utf-8', errors='ignore')
             self.logMsg("Got details of playing media" + result, 2)
+            self.logMsg("> postPlayPlayback", 2)
 
             result = json.loads(result)
             if 'result' in result:
                 itemtype = result["result"]["item"]["type"]
-
-            if self.strm_query(result):
                 addonSettings = xbmcaddon.Addon(id='service.nextup.notification')
                 playMode = addonSettings.getSetting("autoPlayMode")
                 currentepisodenumber = result["result"]["item"]["episode"]
@@ -324,14 +310,14 @@ class Player(xbmc.Player):
                 shortplayNotification= addonSettings.getSetting("shortPlayNotification")
                 shortplayLength = int(addonSettings.getSetting("shortPlayLength")) * 60
 
+            # Try to get tvshowid by showtitle from kodidb if tvshowid is -1 like in strm streams which are added to kodi db
+            if int(tvshowid) == -1:
+                tvshowid = self.showtitle_to_id(title=currentshowtitle)
+                self.logMsg("Fetched missing tvshowid " + str(tvshowid), 2)
 
-                if (itemtype == "episode"):
-                    # Get the next up episode
-                    currentepisodeid = result["result"]["item"]["id"]
-                elif tvshowid == -1:
-                    # I am a STRM ###
-                    tvshowid, episodeid = self.checkStrms(tvshowid, currentshowtitle, currentepisodenumber, currentseasonid)
-                    currentepisodeid = episodeid
+            if (itemtype == "episode"):
+                # Get current episodeid
+                currentepisodeid = self.get_episode_id(showid=str(tvshowid), showseason=currentseasonid, showepisode=currentepisodenumber)
             else:
                 # wtf am i doing here error.. ####
                 self.logMsg("Error: cannot determine if episode", 1)
@@ -527,7 +513,6 @@ class Player(xbmc.Player):
             if 'result' in result:
                 itemtype = result["result"]["item"]["type"]
 
-            if self.strm_query(result):
                 addonSettings = xbmcaddon.Addon(id='service.nextup.notification')
                 playMode = addonSettings.getSetting("autoPlayMode")
                 currentepisodenumber = result["result"]["item"]["episode"]
@@ -538,14 +523,19 @@ class Player(xbmc.Player):
                 shortplayNotification= addonSettings.getSetting("shortPlayNotification")
                 shortplayLength = int(addonSettings.getSetting("shortPlayLength")) * 60
 
+                # Try to get tvshowid by showtitle from kodidb if tvshowid is -1 like in strm streams which are added to kodi db
+                if int(tvshowid) == -1:
+                    tvshowid = self.showtitle_to_id(title=currentshowtitle)
+                    self.logMsg("Fetched missing tvshowid " + str(tvshowid), 2)
 
                 if (itemtype == "episode"):
-                    # Get the next up episode
-                    currentepisodeid = result["result"]["item"]["id"]
-                elif tvshowid == -1:
-                    # I am a STRM ###
-                    tvshowid, episodeid = self.checkStrms(tvshowid, currentshowtitle, currentepisodenumber, currentseasonid)
-                    currentepisodeid = episodeid
+                    # Get current episodeid
+                    currentepisodeid = self.get_episode_id(showid=str(tvshowid), showseason=currentseasonid, showepisode=currentepisodenumber)
+                else:
+                    # wtf am i doing here error.. ####
+                    self.logMsg("Error: cannot determine if episode", 1)
+                    return
+
             else:
                 # wtf am i doing here error.. ####
                 self.logMsg("Error: cannot determine if episode", 1)
