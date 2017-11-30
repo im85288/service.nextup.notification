@@ -10,6 +10,10 @@ from StillWatchingInfo import StillWatchingInfo
 from UnwatchedInfo import UnwatchedInfo
 from PostPlayInfo import PostPlayInfo
 import sys
+import time
+import requests
+import urllib
+import json
 
 if sys.version_info < (2, 7):
     import simplejson as json
@@ -38,6 +42,8 @@ class Player(xbmc.Player):
     fields_tvshows = fields_base + '"sorttitle", "mpaa", "premiered", "year", "episode", "watchedepisodes", "votes", "rating", "studio", "season", "genre", "episodeguide", "tag", "originaltitle", "imdbnumber"'
     fields_episodes = fields_file + '"cast", "productioncode", "rating", "votes", "episode", "showtitle", "tvshowid", "season", "firstaired", "writer", "originaltitle"'
     postplaywindow = None
+    dbserver = addon.getSetting("SkipDBServer")
+    url = dbserver + "/index.php"
 
     def __init__(self, *args):
         self.__dict__ = self._shared_state
@@ -94,10 +100,12 @@ class Player(xbmc.Player):
 
     def onPlayBackStarted(self):
         # Will be called when xbmc starts playing a file
+        addon = xbmcaddon.Addon(id='service.nextup.notification')
         self.postplaywindow = None
         WINDOW = xbmcgui.Window(10000)
         WINDOW.clearProperty("NextUpNotification.NowPlaying.DBID")
         WINDOW.clearProperty("NextUpNotification.NowPlaying.Type")
+        WINDOW.clearProperty("NextUpNotification.Unskipped")
         # Get the active player
         result = self.getNowPlaying()
         if 'result' in result:
@@ -111,6 +119,27 @@ class Player(xbmc.Player):
                     tvshowid = self.showtitle_to_id(title=itemtitle)
                     self.logMsg("Fetched missing tvshowid " + str(tvshowid), 2)
                     WINDOW.setProperty("NextUpNotification.NowPlaying.DBID", str(tvshowid))
+
+                if (addon.getSetting("enableNextUpSkip") == "true"):
+                    playTime = xbmc.Player().getTime()
+                    introStart = 0
+                    introLenght = 0
+                    episode = result["result"]["item"]["episode"]
+                    season = result["result"]["item"]["season"]
+                    if isinstance(itemtitle, unicode):
+                        itemtitle = itemtitle.encode('utf-8')
+                    userdata = {"title": itemtitle, "season": season, "episode": episode}
+                    urllib.urlencode(userdata)
+                    resp = requests.get(self.url, params=userdata, verify=False)
+                    respdec = json.loads(resp.text)
+                    introStart = int(respdec["start"])
+                    introLenght = int(respdec["lenght"])
+                    WINDOW.setProperty("NextUpNotification.introStart", str(introStart))
+                    WINDOW.setProperty("NextUpNotification.introLenght", str(introLenght))
+
+                    if (int(playTime) < (introStart+introLenght)):
+                        WINDOW.setProperty("NextUpNotification.Unskipped", "True")
+
             elif itemtype == "movie":
                 WINDOW.setProperty("NextUpNotification.NowPlaying.Type", itemtype)
                 id = result["result"]["item"]["id"]
@@ -239,7 +268,7 @@ class Player(xbmc.Player):
                     self.logMsg("Got details of next up episode %s" % str(episode), 2)
                     addonSettings = xbmcaddon.Addon(id='service.nextup.notification')
                     unwatchedPage = UnwatchedInfo("script-nextup-notification-UnwatchedInfo.xml",
-                                                  addonSettings.getAddonInfo('path'), "default", "1080i")
+                    addonSettings.getAddonInfo('path'), "default", "1080i")
                     unwatchedPage.setItem(episode[0])
                     self.logMsg("Calling display unwatched", 2)
                     unwatchedPage.show()

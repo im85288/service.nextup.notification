@@ -18,4 +18,9 @@
         <setting id="shortPlayLength" type="number" label="30018" default="10" visible="true" enable="true"/>
         <setting id="shortPlayNotification" type="bool" label="30019" default="true" visible="true" enable="true"/>
     </category>
+    <category label="30026">
+        <setting id="enableNextUpSkip" type="bool" label="30027" default="false" visible="true" enable="true"/>
+        <setting id="SkipDBServer" type="text" label="30028" default="https://www.yourwebserver.com:port" visible="eq(-1,true)" enable="true"/>
+        <setting id="enableNextUpSkip3rdP" type="bool" label="30029" default="false" visible="true" enable="true"/>
+    </category>
 </settings>
