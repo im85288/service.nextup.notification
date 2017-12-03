@@ -28,4 +28,5 @@
     <string id="30027">Enable SkipIntro by DB Request</string>
     <string id="30028">MySQL-DB-Server</string>
     <string id="30029">Enable SkipIntro triggered by other addons</string>
+    <string id="30030">Enable SkipIntro without pause</string>
 </strings>
