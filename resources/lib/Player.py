@@ -9,6 +9,7 @@ from NextUpInfo import NextUpInfo
 from StillWatchingInfo import StillWatchingInfo
 from UnwatchedInfo import UnwatchedInfo
 from PostPlayInfo import PostPlayInfo
+from SkipIntro import SkipIntro
 import sys
 import time
 import requests
@@ -461,6 +462,42 @@ class Player(xbmc.Player):
         self.logMsg("getting next up episodes completed ", 2)
         return items
 
+    def skipIntro(self):
+        addonSettings = xbmcaddon.Addon(id='service.nextup.notification')
+        nextUpSkipEnabledNoPause = addonSettings.getSetting("enableNextUpSkipNoPause") == "true"
+        skipIntroPage = SkipIntro("script-nextup-notification-SkipIntro.xml",
+                                addonSettings.getAddonInfo('path'), "default", "1080i")
+        autoSkipIntro = addonSettings.getSetting("enableAutoSkip") == "true"
+        introStart = int(xbmcgui.Window(10000).getProperty("NextUpNotification.introStart"))
+        introLenght = int(xbmcgui.Window(10000).getProperty("NextUpNotification.introLenght"))
+        if not autoSkipIntro:
+            skipIntroPage.show()
+            playTime = xbmc.Player().getTime()
+
+            while xbmc.Player().isPlaying() and (playTime < (playTime+introLenght)) and not skipIntroPage.isSkipIntro():
+                xbmc.sleep(100)
+                try:
+                    playTime = xbmc.Player().getTime()
+                except:
+                    pass
+
+        if (not autoSkipIntro and skipIntroPage.isSkipIntro()) or autoSkipIntro:
+            if not autoSkipIntro:
+                skipIntroPage.close()
+            # skip intro
+            dlg = xbmcgui.Dialog()
+            dlg.notification("Nextup Service Notification", 'Skipping Intro...', xbmcgui.NOTIFICATION_INFO, 5000)
+            if nextUpSkipEnabledNoPause == "true":
+                xbmc.Player().seekTime(introStart+introLenght)
+                xbmcgui.Window(10000).clearProperty("NextUpNotification.Unskipped")
+            else:
+                xbmc.Player().pause()
+                time.sleep(1) # give kodi the chance to execute
+                xbmc.Player().seekTime(introStart+introLenght)
+                time.sleep(1) # give kodi the chance to execute
+                xbmc.Player().pause()# unpause playback at seek position
+                xbmcgui.Window(10000).clearProperty("NextUpNotification.Unskipped")
+
     def autoPlayPlayback(self):
         currentFile = xbmc.Player().getPlayingFile()
 
@@ -468,7 +505,6 @@ class Player(xbmc.Player):
         result = self.getNowPlaying()
         if 'result' in result:
             itemtype = result["result"]["item"]["type"]
-
             addonSettings = xbmcaddon.Addon(id='service.nextup.notification')
             playMode = addonSettings.getSetting("autoPlayMode")
             currentepisodenumber = result["result"]["item"]["episode"]

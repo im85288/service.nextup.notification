@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<window>
+	<defaultcontrol always="true">6012</defaultcontrol>
+	<zorder>0</zorder>
+	<controls>
+		<control type="group">
+			<left>40</left>
+			<bottom>40</bottom>
+			<width>500</width>
+			<height>100</height>
+			<control type="group">
+				<control type="button" id="6012">
+					<description>Skip intro</description>
+					<width>160</width>
+					<height>100</height>
+					<textcolor>ff333333</textcolor>
+					<focusedcolor>FFededed</focusedcolor>
+					<disabledcolor>B3dddddd</disabledcolor>
+					<selectedcolor>FF000000</selectedcolor>
+					<align>center</align>
+					<font>font13</font>
+					<label>$ADDON[service.nextup.notification 30031]</label>
+					<texturefocus colordiffuse="FF00a2e0" border="5">box.png</texturefocus>
+					<texturenofocus colordiffuse="FFFFFFFF" border="5">box.png</texturenofocus>
+				</control>
+			</control>
+		</control>
+	</controls>
+</window>

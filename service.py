@@ -63,6 +63,7 @@ class Service():
         monitor = xbmc.Monitor()
         lastFile = None
         lastUnwatchedFile = None
+        lastIntro = None
 
         while not monitor.abortRequested():
             # check every 1 sec
@@ -82,7 +83,6 @@ class Service():
                     nextUpDisabled = addonSettings.getSetting("disableNextUp") == "true"
                     nextUpSkipEnabled = addonSettings.getSetting("enableNextUpSkip") == "true"
                     nextUpSkipEnabled3rdP = addonSettings.getSetting("enableNextUpSkip3rdP") == "true"
-                    nextUpSkipEnabledNoPause = addonSettings.getSetting("enableNextUpSkipNoPause") == "true"
                     randomunwatchedtime = addonSettings.getSetting("displayRandomUnwatchedTime")
                     displayrandomunwatched = addonSettings.getSetting("displayRandomUnwatched") == "true"
                     showpostplay = addonSettings.getSetting("showPostPlay") == "true"
@@ -92,18 +92,8 @@ class Service():
                         introStart = int(xbmcgui.Window(10000).getProperty("NextUpNotification.introStart"))
                         introLenght = int(xbmcgui.Window(10000).getProperty("NextUpNotification.introLenght"))
                         if ((playTime >= introStart) and (playTime < (playTime+introLenght))):
-                            dlg = xbmcgui.Dialog()
-                            dlg.notification("Nextup Service Notification", 'Skipping Intro...', xbmcgui.NOTIFICATION_INFO, 5000)
-                            if nextUpSkipEnabledNoPause == "true":
-                                xbmc.Player().seekTime(introStart+introLenght)
-                                xbmcgui.Window(10000).clearProperty("NextUpNotification.Unskipped")
-                            else:
-                                xbmc.Player().pause()
-                                time.sleep(1) # give kodi the chance to execute
-                                xbmc.Player().seekTime(introStart+introLenght)
-                                time.sleep(1) # give kodi the chance to execute
-                                xbmc.Player().pause()# unpause playback at seek position
-                                xbmcgui.Window(10000).clearProperty("NextUpNotification.Unskipped")
+                            lastIntro = currentFile
+                            player.skipIntro()
 
                     if xbmcgui.Window(10000).getProperty("PseudoTVRunning") != "True" and not nextUpDisabled:
 
