@@ -137,10 +137,10 @@ class Player(xbmc.Player):
                     WINDOW.setProperty("NextUpNotification.introStart", str(introStart))
                     WINDOW.setProperty("NextUpNotification.introLenght", str(introLenght))
 
-                    if (int(playTime) < (introStart+introLenght)):
+                    if ((introStart != '') or (introLenght != '')):
                         WINDOW.setProperty("NextUpNotification.Unskipped", "True")
                         dlg = xbmcgui.Dialog()
-                        dlg.notification("Nextup Service Notification", 'Skipping Intro Set!', xbmcgui.NOTIFICATION_INFO, 5000)
+                        dlg.notification("Nextup Service Notification", 'Skipping Intro Prepared!', xbmcgui.NOTIFICATION_INFO, 2000)
 
             elif itemtype == "movie":
                 WINDOW.setProperty("NextUpNotification.NowPlaying.Type", itemtype)

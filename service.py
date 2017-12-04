@@ -65,8 +65,8 @@ class Service():
         lastUnwatchedFile = None
 
         while not monitor.abortRequested():
-            # check every 5 sec
-            if monitor.waitForAbort(5):
+            # check every 1 sec
+            if monitor.waitForAbort(1):
                 # Abort was requested while waiting. We should exit
                 break
             if xbmc.Player().isPlaying():
