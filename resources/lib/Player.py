@@ -481,9 +481,10 @@ class Player(xbmc.Player):
                 except:
                     pass
 
+        if not autoSkipIntro:
+            skipIntroPage.close()
+
         if (not autoSkipIntro and skipIntroPage.isSkipIntro()) or autoSkipIntro:
-            if not autoSkipIntro:
-                skipIntroPage.close()
             # skip intro
             dlg = xbmcgui.Dialog()
             dlg.notification("Nextup Service Notification", 'Skipping Intro...', xbmcgui.NOTIFICATION_INFO, 5000)
