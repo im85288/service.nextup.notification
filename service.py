@@ -94,16 +94,16 @@ class Service():
                         if ((playTime >= introStart) and (playTime < (playTime+introLenght))):
                             dlg = xbmcgui.Dialog()
                             dlg.notification("Nextup Service Notification", 'Skipping Intro...', xbmcgui.NOTIFICATION_INFO, 5000)
-			    if nextUpSkipEnabledNoPause == "true":
-				xbmc.Player().seekTime(introStart+introLenght)
-				xbmcgui.Window(10000).clearProperty("NextUpNotification.Unskipped")
-			    else:
-				xbmc.Player().pause()
-				time.sleep(1) # give kodi the chance to execute
-				xbmc.Player().seekTime(introStart+introLenght)
-				time.sleep(1) # give kodi the chance to execute
-				xbmc.Player().pause()# unpause playback at seek position
-				xbmcgui.Window(10000).clearProperty("NextUpNotification.Unskipped")
+                        if nextUpSkipEnabledNoPause == "true":
+                            xbmc.Player().seekTime(introStart+introLenght)
+                            xbmcgui.Window(10000).clearProperty("NextUpNotification.Unskipped")
+                        else:
+                            xbmc.Player().pause()
+                            time.sleep(1) # give kodi the chance to execute
+                            xbmc.Player().seekTime(introStart+introLenght)
+                            time.sleep(1) # give kodi the chance to execute
+                            xbmc.Player().pause()# unpause playback at seek position
+                            xbmcgui.Window(10000).clearProperty("NextUpNotification.Unskipped")
 
                     if xbmcgui.Window(10000).getProperty("PseudoTVRunning") != "True" and not nextUpDisabled:
 
