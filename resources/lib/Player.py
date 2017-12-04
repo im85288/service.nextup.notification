@@ -139,6 +139,8 @@ class Player(xbmc.Player):
 
                     if (int(playTime) < (introStart+introLenght)):
                         WINDOW.setProperty("NextUpNotification.Unskipped", "True")
+                        dlg = xbmcgui.Dialog()
+                        dlg.notification("Nextup Service Notification", 'Skipping Intro Set!', xbmcgui.NOTIFICATION_INFO, 5000)
 
             elif itemtype == "movie":
                 WINDOW.setProperty("NextUpNotification.NowPlaying.Type", itemtype)
@@ -608,3 +610,4 @@ class Player(xbmc.Player):
                         xbmc.executeJSONRPC(
                             '{ "jsonrpc": "2.0", "id": 0, "method": "Player.Open", '
                             '"params": { "item": {"episodeid": ' + str(episode["episodeid"]) + '} } }')
+
