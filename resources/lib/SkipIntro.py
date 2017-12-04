@@ -25,6 +25,9 @@ class SkipIntro(xbmcgui.WindowXMLDialog):
     def isSkipIntro(self):
         return self.skipintro
 
+    def closeDialog(self):
+        self.close()
+
     def onClick(self, controlID):
 
         xbmc.log('skip intro onclick: ' + str(controlID))

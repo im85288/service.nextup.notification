@@ -470,18 +470,21 @@ class Player(xbmc.Player):
         autoSkipIntro = addonSettings.getSetting("enableAutoSkip") == "true"
         introStart = int(xbmcgui.Window(10000).getProperty("NextUpNotification.introStart"))
         introLenght = int(xbmcgui.Window(10000).getProperty("NextUpNotification.introLenght"))
+        endTime = xbmc.Player().getTime() + introLenght
         if not autoSkipIntro:
-            skipIntroPage.show()
+            skipIntroPage.doModal()
             playTime = xbmc.Player().getTime()
 
-            while xbmc.Player().isPlaying() and (playTime < (playTime+introLenght)) and not skipIntroPage.isSkipIntro():
+            while xbmc.Player().isPlaying() and (playTime < endTime) and not skipIntroPage.isSkipIntro():
                 xbmc.sleep(100)
                 try:
                     playTime = xbmc.Player().getTime()
                 except:
                     pass
 
+        self.logMsg("skipIntro completed loop ", 1)
         if not autoSkipIntro:
+            # why is this not closing when the user did not choose to skip......
             skipIntroPage.close()
 
         if (not autoSkipIntro and skipIntroPage.isSkipIntro()) or autoSkipIntro:
@@ -498,6 +501,7 @@ class Player(xbmc.Player):
                 time.sleep(1) # give kodi the chance to execute
                 xbmc.Player().pause()# unpause playback at seek position
                 xbmcgui.Window(10000).clearProperty("NextUpNotification.Unskipped")
+        del skipIntroPage
 
     def autoPlayPlayback(self):
         currentFile = xbmc.Player().getPlayingFile()
