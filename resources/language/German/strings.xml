@@ -24,4 +24,9 @@
     <string id="30023">Zeige Beschreibung auf Übersichtsbildschirm</string>
     <string id="30024">Noch am schauen?</string>
     <string id="30025">Zeige Benachrichtigung vor Übersichtsbildschirm</string>
+    <string id="30026">SkipIntro</string>
+    <string id="30027">Aktiviere SkipIntro durch DB-Abfrage</string>
+    <string id="30028">MySQL-DB-Server</string>
+    <string id="30029">Aktiviere SkipIntro ausgelößt durch andere Addons</string>
+    <string id="30030">Aktiviere SkipIntro ohne Pause</string>
 </strings>
