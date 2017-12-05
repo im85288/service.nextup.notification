@@ -83,4 +83,4 @@ def unicodetoascii(text):
             replace('\xe2\x81\xbd', "(").
             replace('\xe2\x81\xbe', ")")
             )
-return TEXT
+    return TEXT
