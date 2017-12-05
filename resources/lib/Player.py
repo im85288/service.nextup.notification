@@ -472,11 +472,12 @@ class Player(xbmc.Player):
         introLenght = int(xbmcgui.Window(10000).getProperty("NextUpNotification.introLenght"))
         endTime = xbmc.Player().getTime() + introLenght
         if not autoSkipIntro:
-            skipIntroPage.doModal()
+            skipIntroPage.show()
             playTime = xbmc.Player().getTime()
 
             while xbmc.Player().isPlaying() and (playTime < endTime) and not skipIntroPage.isSkipIntro():
                 xbmc.sleep(100)
+                self.logMsg("skipIntro playtime "+str(playTime)+" endtime "+str(endTime), 1)
                 try:
                     playTime = xbmc.Player().getTime()
                 except:
@@ -484,8 +485,10 @@ class Player(xbmc.Player):
 
         self.logMsg("skipIntro completed loop ", 1)
         if not autoSkipIntro:
-            # why is this not closing when the user did not choose to skip......
             skipIntroPage.close()
+            xbmc.executebuiltin("Dialog.Close(all,true)")
+
+        xbmcgui.Window(10000).clearProperty("NextUpNotification.Unskipped")
 
         if (not autoSkipIntro and skipIntroPage.isSkipIntro()) or autoSkipIntro:
             # skip intro
@@ -493,14 +496,12 @@ class Player(xbmc.Player):
             dlg.notification("Nextup Service Notification", 'Skipping Intro...', xbmcgui.NOTIFICATION_INFO, 5000)
             if nextUpSkipEnabledNoPause == "true":
                 xbmc.Player().seekTime(introStart+introLenght)
-                xbmcgui.Window(10000).clearProperty("NextUpNotification.Unskipped")
             else:
                 xbmc.Player().pause()
                 time.sleep(1) # give kodi the chance to execute
                 xbmc.Player().seekTime(introStart+introLenght)
                 time.sleep(1) # give kodi the chance to execute
                 xbmc.Player().pause()# unpause playback at seek position
-                xbmcgui.Window(10000).clearProperty("NextUpNotification.Unskipped")
         del skipIntroPage
 
     def autoPlayPlayback(self):
