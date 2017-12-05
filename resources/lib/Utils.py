@@ -10,7 +10,7 @@ else:
 
 addonSettings = xbmcaddon.Addon(id='service.nextup.notification')
 language = addonSettings.getLocalizedString
-
+KODI_VERSION = int(xbmc.getInfoLabel("System.BuildVersion").split(".")[0])
 
 def logMsg(title, msg, level=1):
     logLevel = int(addonSettings.getSetting("logLevel"))

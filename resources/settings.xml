@@ -2,7 +2,8 @@
 <settings>
     <category label="30003">
         <setting id="showPostPlay" type="bool" label="30022" default="true" visible="true" enable="true"/>
-        <setting id="showPostPlayPlot" type="bool" label="30023" default="true" visible="eq(-1,true)" enable="true"/>
+        <setting id="showPostPlayPreview" type="bool" label="30025" default="true" visible="eq(-1,true)" enable="true"/>
+        <setting id="showPostPlayPlot" type="bool" label="30023" default="true" visible="eq(-2,true)" enable="true"/>
         <setting id="autoPlaySeasonTime" type="number" label="30001" default="30" visible="true" enable="true"/>
         <setting id="autoPlayMode" type="enum" label="30005" values="Play|Don't Play" default="0"/>
         <setting id="playedInARow" type="number" label="30009" default="3" visible="true" enable="true"/>
@@ -16,5 +17,12 @@
         <setting id="shortPlayMode" type="bool" label="30017" default="false" visible="true" enable="true"/>
         <setting id="shortPlayLength" type="number" label="30018" default="10" visible="true" enable="true"/>
         <setting id="shortPlayNotification" type="bool" label="30019" default="true" visible="true" enable="true"/>
+    </category>
+    <category label="30026">
+        <setting id="enableNextUpSkip" type="bool" label="30027" default="false" visible="true" enable="true"/>
+        <setting id="SkipDBServer" type="text" label="30028" default="https://www.yourwebserver.com:port" visible="eq(-1,true)" enable="true"/>
+        <setting id="enableAutoSkip" type="bool" label="30032" default="false" visible="eq(-2,true)" enable="true"/>
+        <setting id="enableNextUpSkip3rdP" type="bool" label="30029" default="false" visible="true" enable="true"/>
+        <setting id="enableNextUpSkipNoPause" type="bool" label="30030" default="false" visible="true" enable="true"/>
     </category>
 </settings>

@@ -25,6 +25,10 @@ class NextUpInfo(xbmcgui.WindowXMLDialog):
         clearartimage = self.item['art'].get('tvshow.clearart', '')
         landscapeimage = self.item['art'].get('tvshow.landscape', '')
         fanartimage = self.item['art'].get('tvshow.fanart', '')
+        # make sure landscape is filled - by default landscape contains a smaller fanart image with the tvshow banner
+        # but in many cases it is not available - so replace it with fanart
+        if landscapeimage.strip() == "":
+            landscapeimage = self.item['art'].get('tvshow.fanart', '')
         overview = self.item['plot']
         tvshowtitle = self.item['showtitle']
         name = self.item['title']

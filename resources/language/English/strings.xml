@@ -23,4 +23,12 @@
     <string id="30022">Show postplay screen</string>
     <string id="30023">Show plot on postplay screen</string>
     <string id="30024">Still There?</string>
+    <string id="30025">Show preview before postplay screen</string>
+    <string id="30026">SkipIntro</string>
+    <string id="30027">Enable SkipIntro by DB Request</string>
+    <string id="30028">MySQL-DB-Server</string>
+    <string id="30029">Enable SkipIntro triggered by other addons</string>
+    <string id="30030">Enable SkipIntro without pause</string>
+    <string id="30031">Skip Intro</string>
+    <string id="30032">Automatically skip intros</string>
 </strings>
