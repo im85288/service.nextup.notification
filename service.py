@@ -11,6 +11,7 @@ sys.path.append(BASE_RESOURCE_PATH)
 import Utils as utils
 from Player import Player
 from ClientInformation import ClientInformation
+from SkipIntro import SkipIntro
 
 class Service():
     clientInfo = ClientInformation()
@@ -30,40 +31,11 @@ class Service():
         className = self.__class__.__name__
         utils.logMsg("%s %s" % (self.addonName, className), str(msg), int(lvl))
 
-    def getNowPlaying(self):
-        # Get the active player
-        result = xbmc.executeJSONRPC('{"jsonrpc": "2.0", "id": 1, "method": "Player.GetActivePlayers"}')
-        result = unicode(result, 'utf-8', errors='ignore')
-        self.logMsg("Got active player " + result, 2)
-        result = json.loads(result)
-
-        # Seems to work too fast loop whilst waiting for it to become active
-        while not result["result"]:
-            result = xbmc.executeJSONRPC('{"jsonrpc": "2.0", "id": 1, "method": "Player.GetActivePlayers"}')
-            result = unicode(result, 'utf-8', errors='ignore')
-            self.logMsg("Got active player " + result, 2)
-            result = json.loads(result)
-
-        if 'result' in result and result["result"][0] is not None:
-            playerid = result["result"][0]["playerid"]
-
-            # Get details of the playing media
-            self.logMsg("Getting details of now  playing media for skip intro", 1)
-            result = xbmc.executeJSONRPC(
-                '{"jsonrpc": "2.0", "id": 1, "method": "Player.GetItem", "params": {"playerid": ' + str(
-                    playerid) + ', "properties": ["showtitle", "season"] } }')
-            result = unicode(result, 'utf-8', errors='ignore')
-            self.logMsg("Got details of now playing media for skip intro" + result, 2)
-
-            result = json.loads(result)
-            return result
-
     def ServiceEntryPoint(self):
         player = Player()
         monitor = xbmc.Monitor()
         lastFile = None
         lastUnwatchedFile = None
-        lastIntro = None
 
         while not monitor.abortRequested():
             # check every 1 sec
@@ -73,16 +45,15 @@ class Service():
             if xbmc.Player().isPlaying():
                 try:
                     playTime = xbmc.Player().getTime()
-
                     totalTime = xbmc.Player().getTotalTime()
-
                     currentFile = xbmc.Player().getPlayingFile()
-
                     addonSettings = xbmcaddon.Addon(id='service.nextup.notification')
                     notificationtime = addonSettings.getSetting("autoPlaySeasonTime")
                     nextUpDisabled = addonSettings.getSetting("disableNextUp") == "true"
                     nextUpSkipEnabled = addonSettings.getSetting("enableNextUpSkip") == "true"
+                    nextUpSkipEnabledAuto = addonSettings.getSetting("enableAutoSkip") == "true"
                     nextUpSkipEnabled3rdP = addonSettings.getSetting("enableNextUpSkip3rdP") == "true"
+                    nextUpSkipEnabledNoPause = addonSettings.getSetting("enableNextUpSkipNoPause") == "true"
                     randomunwatchedtime = addonSettings.getSetting("displayRandomUnwatchedTime")
                     displayrandomunwatched = addonSettings.getSetting("displayRandomUnwatched") == "true"
                     showpostplay = addonSettings.getSetting("showPostPlay") == "true"
@@ -91,9 +62,29 @@ class Service():
                     if xbmcgui.Window(10000).getProperty("NextUpNotification.Unskipped") == "True" and (nextUpSkipEnabled or nextUpSkipEnabled3rdP):
                         introStart = int(xbmcgui.Window(10000).getProperty("NextUpNotification.introStart"))
                         introLenght = int(xbmcgui.Window(10000).getProperty("NextUpNotification.introLenght"))
+                        self.logMsg("skip intro check playtime is "+str(playTime)+" introstart is "+str(introStart), 1)
                         if ((playTime >= introStart) and (playTime < (playTime+introLenght))):
-                            lastIntro = currentFile
-                            player.skipIntro()
+                            if nextUpSkipEnabledAuto == "true":
+                                dlg = xbmcgui.Dialog()
+                                dlg.notification("Nextup Service Notification", 'Skipping Intro...', xbmcgui.NOTIFICATION_INFO, 5000)
+
+                                if nextUpSkipEnabledNoPause == "true":
+                                    xbmc.Player().seekTime(introStart+introLenght)
+                                    xbmcgui.Window(10000).clearProperty("NextUpNotification.Unskipped")
+                                else:
+                                    xbmc.Player().pause()
+                                    time.sleep(1) # give kodi the chance to execute
+                                    xbmc.Player().seekTime(introStart+introLenght)
+                                    time.sleep(1) # give kodi the chance to execute
+                                    xbmc.Player().pause()# unpause playback at seek position
+                                    xbmcgui.Window(10000).clearProperty("NextUpNotification.Unskipped")
+                            else:
+                                skipIntroPage = SkipIntro("script-nextup-notification-SkipIntro.xml",addonSettings.getAddonInfo('path'), "default", "1080i")
+                                self.logMsg("showing skip intro page")
+                                # close skip intro dialog after time
+                                xbmc.executebuiltin('AlarmClock(closedialog,Dialog.Close(all,true),00:15,silent)')
+                                skipIntroPage.show()
+                                xbmcgui.Window(10000).clearProperty("NextUpNotification.Unskipped")
 
                     if xbmcgui.Window(10000).getProperty("PseudoTVRunning") != "True" and not nextUpDisabled:
 
