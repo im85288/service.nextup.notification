@@ -50,41 +50,10 @@ class Service():
                     addonSettings = xbmcaddon.Addon(id='service.nextup.notification')
                     notificationtime = addonSettings.getSetting("autoPlaySeasonTime")
                     nextUpDisabled = addonSettings.getSetting("disableNextUp") == "true"
-                    nextUpSkipEnabled = addonSettings.getSetting("enableNextUpSkip") == "true"
-                    nextUpSkipEnabledAuto = addonSettings.getSetting("enableAutoSkip") == "true"
-                    nextUpSkipEnabled3rdP = addonSettings.getSetting("enableNextUpSkip3rdP") == "true"
-                    nextUpSkipEnabledNoPause = addonSettings.getSetting("enableNextUpSkipNoPause") == "true"
                     randomunwatchedtime = addonSettings.getSetting("displayRandomUnwatchedTime")
                     displayrandomunwatched = addonSettings.getSetting("displayRandomUnwatched") == "true"
                     showpostplay = addonSettings.getSetting("showPostPlay") == "true"
                     showpostplaypreview = addonSettings.getSetting("showPostPlayPreview") == "true"
-
-                    if xbmcgui.Window(10000).getProperty("NextUpNotification.Unskipped") == "True" and (nextUpSkipEnabled or nextUpSkipEnabled3rdP):
-                        introStart = int(xbmcgui.Window(10000).getProperty("NextUpNotification.introStart"))
-                        introLenght = int(xbmcgui.Window(10000).getProperty("NextUpNotification.introLenght"))
-                        self.logMsg("skip intro check playtime is "+str(playTime)+" introstart is "+str(introStart), 1)
-                        if ((playTime >= introStart) and (playTime < (playTime+introLenght))):
-                            if nextUpSkipEnabledAuto == "true":
-                                dlg = xbmcgui.Dialog()
-                                dlg.notification("Nextup Service Notification", 'Skipping Intro...', xbmcgui.NOTIFICATION_INFO, 5000)
-
-                                if nextUpSkipEnabledNoPause == "true":
-                                    xbmc.Player().seekTime(introStart+introLenght)
-                                    xbmcgui.Window(10000).clearProperty("NextUpNotification.Unskipped")
-                                else:
-                                    xbmc.Player().pause()
-                                    time.sleep(1) # give kodi the chance to execute
-                                    xbmc.Player().seekTime(introStart+introLenght)
-                                    time.sleep(1) # give kodi the chance to execute
-                                    xbmc.Player().pause()# unpause playback at seek position
-                                    xbmcgui.Window(10000).clearProperty("NextUpNotification.Unskipped")
-                            else:
-                                skipIntroPage = SkipIntro("script-nextup-notification-SkipIntro.xml",addonSettings.getAddonInfo('path'), "default", "1080i")
-                                self.logMsg("showing skip intro page")
-                                # close skip intro dialog after time
-                                xbmc.executebuiltin('AlarmClock(closedialog,Dialog.Close(all,true),00:15,silent)')
-                                skipIntroPage.show()
-                                xbmcgui.Window(10000).clearProperty("NextUpNotification.Unskipped")
 
                     if xbmcgui.Window(10000).getProperty("PseudoTVRunning") != "True" and not nextUpDisabled:
 
