@@ -21,8 +21,9 @@
     <category label="30026">
         <setting id="enableNextUpSkip" type="bool" label="30027" default="false" visible="true" enable="true"/>
         <setting id="SkipDBServer" type="text" label="30028" default="https://www.yourwebserver.com:port" visible="eq(-1,true)" enable="true"/>
-        <setting id="enableAutoSkip" type="bool" label="30031" default="false" visible="eq(-2,true)" enable="true"/>
-        <setting id="enableNextUpSkip3rdP" type="bool" label="30029" default="false" visible="true" enable="true"/>
+        <setting id="enableAutoSkip" type="bool" label="30031" default="false" visible="true" enable="true"/>
+        <setting id="enableSkipCheckDelay" type="bool" label="30032" default="false" visible="true" enable="true"/>
         <setting id="enableNextUpSkipNoPause" type="bool" label="30030" default="false" visible="true" enable="true"/>
+        <setting id="enableNextUpSkip3rdP" type="bool" label="30029" default="false" visible="true" enable="true"/>
     </category>
 </settings>
