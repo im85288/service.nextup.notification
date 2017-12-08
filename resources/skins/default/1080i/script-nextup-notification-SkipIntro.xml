@@ -14,7 +14,7 @@
 					<width>180</width>
 					<height>80</height>
 					<font>font12</font>
-					<label>$ADDON[service.nextup.notification 30031]</label>
+					<label>$ADDON[service.nextup.notification 30026]</label>
 					<textcolor>FFededed</textcolor>
 					<focusedcolor>FFededed</focusedcolor>
 					<selectedcolor>FFededed</selectedcolor>
