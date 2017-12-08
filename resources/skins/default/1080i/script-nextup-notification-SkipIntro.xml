@@ -4,7 +4,7 @@
 	<zorder>0</zorder>
 	<controls>
 		<control type="group">
-			<right>10</right>
+			<right>30</right>
 			<bottom>60</bottom>
 			<height>80</height>
 			<width>180</width>
