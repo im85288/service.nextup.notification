@@ -132,16 +132,16 @@ class Player(xbmc.Player):
                     resp = requests.get(self.url, params=userdata, verify=False)
                     respdec = json.loads(resp.text)
                     introStart = int(respdec["start"])
-                    introLenght = int(respdec["lenght"])
+                    introLength = int(respdec["length"])
                     WINDOW.setProperty("NextUpNotification.introStart", str(introStart))
-                    WINDOW.setProperty("NextUpNotification.introLenght", str(introLenght))
+                    WINDOW.setProperty("NextUpNotification.introLength", str(introLength))
                     if (addon.getSetting("enableSkipCheckDelay") == "true"):
                         self.logMsg("Using delayed setting Unskipped", 1)
                         # let's give kodi the chance to set xbmc.Player().getTime() to prevent
                         # from popup notify directly after playback starts (possible only happens on slower systems like rpi
                         time.sleep (3)
 
-                    if ((introStart != '') or (introLenght != '')):
+                    if ((introStart != '') or (introLength != '')):
                         WINDOW.setProperty("NextUpNotification.Unskipped", "True")
                         # it was only for debugging
                         #dlg = xbmcgui.Dialog()

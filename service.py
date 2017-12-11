@@ -61,20 +61,20 @@ class Service():
 
                     if xbmcgui.Window(10000).getProperty("NextUpNotification.Unskipped") == "True" and (nextUpSkipEnabled or nextUpSkipEnabled3rdP):
                         introStart = int(xbmcgui.Window(10000).getProperty("NextUpNotification.introStart"))
-                        introLenght = int(xbmcgui.Window(10000).getProperty("NextUpNotification.introLenght"))
+                        introLength = int(xbmcgui.Window(10000).getProperty("NextUpNotification.introLength"))
                         self.logMsg("skip intro check playtime is "+str(playTime)+" introstart is "+str(introStart), 1)
-                        if ((playTime >= introStart) and (playTime < (playTime+introLenght))):
+                        if ((playTime >= introStart) and (playTime < (playTime+introLength))):
                             if nextUpSkipEnabledAuto == 1:
                                 dlg = xbmcgui.Dialog()
                                 dlg.notification("Nextup Service Notification", 'Skipping Intro...', xbmcgui.NOTIFICATION_INFO, 5000)
 
                                 if nextUpSkipEnabledNoPause == 1:
-                                    xbmc.Player().seekTime(introStart+introLenght)
+                                    xbmc.Player().seekTime(introStart+introLength)
                                     xbmcgui.Window(10000).clearProperty("NextUpNotification.Unskipped")
                                 else:
                                     xbmc.Player().pause()
                                     time.sleep(1) # give kodi the chance to execute
-                                    xbmc.Player().seekTime(introStart+introLenght)
+                                    xbmc.Player().seekTime(introStart+introLength)
                                     time.sleep(1) # give kodi the chance to execute
                                     xbmc.Player().pause()# unpause playback at seek position
                                     xbmcgui.Window(10000).clearProperty("NextUpNotification.Unskipped")
