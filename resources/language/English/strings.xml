@@ -30,4 +30,5 @@
     <string id="30029">Enable SkipIntro triggered by other addons</string>
     <string id="30030">Enable SkipIntro without pause</string>
     <string id="30031">Automatically skip intros</string>
+    <string id="30032">Enable delay for slower Systems like RPi</string>
 </strings>

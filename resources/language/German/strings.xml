@@ -30,4 +30,5 @@
     <string id="30029">Aktiviere SkipIntro ausgelößt durch andere Addons</string>
     <string id="30030">Aktiviere SkipIntro ohne Pause</string>
     <string id="30031">Automatisch Intros überspringen</string>
+    <string id="30032">Aktivere Verzögerung für langsame Systeme wie den RPi</string>
 </strings>
