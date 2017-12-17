@@ -20,11 +20,11 @@ class SkipIntro(xbmcgui.WindowXMLDialog):
     def onClick(self, controlID):
 
         introStart = int(xbmcgui.Window(10000).getProperty("NextUpNotification.introStart"))
-        introLenght = int(xbmcgui.Window(10000).getProperty("NextUpNotification.introLenght"))
+        introLength = int(xbmcgui.Window(10000).getProperty("NextUpNotification.introLength"))
 
         if controlID == 6012:
             # skip intro selected by user
-            xbmc.Player().seekTime(introStart+introLenght)
+            xbmc.Player().seekTime(introStart+introLength)
             self.close()
 
         pass
