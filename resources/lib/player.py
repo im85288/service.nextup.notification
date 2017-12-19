@@ -4,12 +4,11 @@ import xbmcgui
 import Utils as utils
 import AddonSignals
 import library
-from ClientInformation import ClientInformation
-from NextUpInfo import NextUpInfo
-from StillWatchingInfo import StillWatchingInfo
-from UnwatchedInfo import UnwatchedInfo
-from PostPlayInfo import PostPlayInfo
-from SkipIntro import SkipIntro
+from client_information import ClientInformation
+from next_up_info import NextUpInfo
+from still_watching_info import StillWatchingInfo
+from unwatched_info import UnwatchedInfo
+from post_play_info import PostPlayInfo
 import sys
 import time
 import requests

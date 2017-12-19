@@ -1,6 +1,7 @@
 import xbmc
 import xbmcgui
 from platform import machine
+from common_functions import CommonFunctions
 
 ACTION_PLAYER_STOP = 13
 OS_MACHINE = machine()
@@ -18,13 +19,13 @@ class SkipIntro(xbmcgui.WindowXMLDialog):
         self.action_exitkeys_id = [10, 13]
 
     def onClick(self, controlID):
-
-        introStart = int(xbmcgui.Window(10000).getProperty("NextUpNotification.introStart"))
-        introLength = int(xbmcgui.Window(10000).getProperty("NextUpNotification.introLength"))
+        home_window = CommonFunctions.get_home_window()
+        intro_start = int(home_window.getProperty("NextUpNotification.introStart"))
+        intro_length = int(home_window.getProperty("NextUpNotification.introLength"))
 
         if controlID == 6012:
             # skip intro selected by user
-            xbmc.Player().seekTime(introStart+introLength)
+            xbmc.Player().seekTime(intro_start+intro_length)
             self.close()
 
         pass
