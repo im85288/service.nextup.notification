@@ -8,11 +8,11 @@ import xbmc
 import xbmcaddon
 import xbmcgui
 
-import library
 from addon_information import AddonInformation
 from logger import Logger
 from next_up_info import NextUpInfo
 from post_play_info import PostPlayInfo
+from library import LibraryFunctions
 from still_watching_info import StillWatchingInfo
 from unwatched_info import UnwatchedInfo
 from utils import Utils
@@ -21,8 +21,6 @@ if sys.version_info < (2, 7):
     import simplejson as json
 else:
     import json
-
-LIBRARY = library.LibraryFunctions()
 
 
 # service class for playback monitoring
@@ -50,54 +48,10 @@ class Player(xbmc.Player):
         self.__dict__ = self._shared_state
         self.logger = Logger("%s %s" % (self.addon_info.get_addon_name(), self.__class__.__name__))
         self.logMsg("Starting playback monitor service", 1)
+        self.library = LibraryFunctions()
 
     def logMsg(self, msg, lvl=1):
         self.logger.log(msg, lvl)
-
-    def json_query(self, query, ret):
-        try:
-            xbmc_request = json.dumps(query)
-            result = xbmc.executeJSONRPC(xbmc_request)
-            result = unicode(result, 'utf-8', errors='ignore')
-            if ret:
-                return json.loads(result)['result']
-
-            else:
-                return json.loads(result)
-        except:
-            xbmc_request = json.dumps(query)
-            result = xbmc.executeJSONRPC(xbmc_request)
-            result = unicode(result, 'utf-8', errors='ignore')
-            self.logMsg(json.loads(result), 1)
-            return json.loads(result)
-
-    def getNowPlaying(self):
-        # Get the active player
-        result = xbmc.executeJSONRPC('{"jsonrpc": "2.0", "id": 1, "method": "Player.GetActivePlayers"}')
-        result = unicode(result, 'utf-8', errors='ignore')
-        self.logMsg("Got active player " + result, 2)
-        result = json.loads(result)
-
-        # Seems to work too fast loop whilst waiting for it to become active
-        while not result["result"]:
-            result = xbmc.executeJSONRPC('{"jsonrpc": "2.0", "id": 1, "method": "Player.GetActivePlayers"}')
-            result = unicode(result, 'utf-8', errors='ignore')
-            self.logMsg("Got active player " + result, 2)
-            result = json.loads(result)
-
-        if 'result' in result and result["result"][0] is not None:
-            playerid = result["result"][0]["playerid"]
-
-            # Get details of the playing media
-            self.logMsg("Getting details of now  playing media", 1)
-            result = xbmc.executeJSONRPC(
-                '{"jsonrpc": "2.0", "id": 1, "method": "Player.GetItem", "params": {"playerid": ' + str(
-                    playerid) + ', "properties": ["showtitle", "tvshowid", "episode", "season", "playcount","genre"] } }')
-            result = unicode(result, 'utf-8', errors='ignore')
-            self.logMsg("Got details of now playing media" + result, 2)
-
-            result = json.loads(result)
-            return result
 
     def onPlayBackStarted(self):
         # Will be called when xbmc starts playing a file
@@ -108,7 +62,7 @@ class Player(xbmc.Player):
         WINDOW.clearProperty("NextUpNotification.NowPlaying.Type")
         WINDOW.clearProperty("NextUpNotification.Unskipped")
         # Get the active player
-        result = self.getNowPlaying()
+        result = self.library.get_now_playing()
         if 'result' in result:
             itemtype = result["result"]["item"]["type"]
             if itemtype == "episode":
@@ -118,7 +72,7 @@ class Player(xbmc.Player):
                 tvshowid = result["result"]["item"]["tvshowid"]
                 WINDOW.setProperty("NextUpNotification.NowPlaying.DBID", str(tvshowid))
                 if int(tvshowid) == -1:
-                    tvshowid = self.showtitle_to_id(title=itemtitle)
+                    tvshowid = self.library.showtitle_to_id(title=itemtitle)
                     self.logMsg("Fetched missing tvshowid " + str(tvshowid), 2)
                     WINDOW.setProperty("NextUpNotification.NowPlaying.DBID", str(tvshowid))
 
@@ -151,51 +105,6 @@ class Player(xbmc.Player):
                 WINDOW.setProperty("NextUpNotification.NowPlaying.Type", itemtype)
                 id = result["result"]["item"]["id"]
                 WINDOW.setProperty("NextUpNotification.NowPlaying.DBID", str(id))
-
-    def showtitle_to_id(self, title):
-        query = {
-            "jsonrpc": "2.0",
-            "method": "VideoLibrary.GetTVShows",
-            "params": {
-                "properties": ["title"]
-            },
-            "id": "libTvShows"
-        }
-        try:
-            json_result = json.loads(xbmc.executeJSONRPC(json.dumps(query, encoding='utf-8')))
-            if 'result' in json_result and 'tvshows' in json_result['result']:
-                json_result = json_result['result']['tvshows']
-                for tvshow in json_result:
-                    if tvshow['label'] == title:
-                        return tvshow['tvshowid']
-            return '-1'
-        except Exception:
-            return '-1'
-
-    def get_episode_id(self, showid, showseason, showepisode):
-        showseason = int(showseason)
-        showepisode = int(showepisode)
-        episodeid = 0
-        query = {
-            "jsonrpc": "2.0",
-            "method": "VideoLibrary.GetEpisodes",
-            "params": {
-                "properties": ["season", "episode"],
-                "tvshowid": int(showid)
-            },
-            "id": "1"
-        }
-        try:
-            json_result = json.loads(xbmc.executeJSONRPC(json.dumps(query, encoding='utf-8')))
-            if 'result' in json_result and 'episodes' in json_result['result']:
-                json_result = json_result['result']['episodes']
-                for episode in json_result:
-                    if episode['season'] == showseason and episode['episode'] == showepisode:
-                        if 'episodeid' in episode:
-                            episodeid = episode['episodeid']
-            return episodeid
-        except Exception:
-            return episodeid
 
     def onPlayBackEnded(self):
         self.logMsg("playback ended ", 2)
@@ -251,7 +160,7 @@ class Player(xbmc.Player):
 
     def displayRandomUnwatched(self):
         # Get the active player
-        result = self.getNowPlaying()
+        result = self.library.get_now_playing()
         if 'result' in result:
             itemtype = result["result"]["item"]["type"]
             if itemtype == "episode":
@@ -270,7 +179,7 @@ class Player(xbmc.Player):
                 self.logMsg("Got tvshow" + str(tvshow), 2)
                 tvshowid = tvshow[0]["tvshowid"]
                 if int(tvshowid) == -1:
-                    tvshowid = self.showtitle_to_id(title=itemtitle)
+                    tvshowid = self.library.showtitle_to_id(title=itemtitle)
                     self.logMsg("Fetched missing tvshowid " + str(tvshowid), 2)
                 episode = Utils.get_json('VideoLibrary.GetEpisodes',
                                          '{ "tvshowid": %d, "sort": {"method":"episode"}, "filter": {"and": [ {"field": "playcount", "operator": "lessthan", "value":"1"}, {"field": "season", "operator": "greaterthan", "value": "0"} ]}, "properties": [ %s ], "limits":{"end":1}}' % (
@@ -294,7 +203,7 @@ class Player(xbmc.Player):
         currentFile = xbmc.Player().getPlayingFile()
 
         # Get the active player
-        result = self.getNowPlaying()
+        result = self.library.get_now_playing()
         if 'result' in result:
             itemtype = result["result"]["item"]["type"]
             addonSettings = xbmcaddon.Addon(id='service.nextup.notification')
@@ -310,12 +219,12 @@ class Player(xbmc.Player):
 
         # Try to get tvshowid by showtitle from kodidb if tvshowid is -1 like in strm streams which are added to kodi db
         if int(tvshowid) == -1:
-            tvshowid = self.showtitle_to_id(title=currentshowtitle)
+            tvshowid = self.library.showtitle_to_id(title=currentshowtitle)
             self.logMsg("Fetched missing tvshowid " + str(tvshowid), 2)
 
         if (itemtype == "episode"):
             # Get current episodeid
-            currentepisodeid = self.get_episode_id(showid=str(tvshowid), showseason=currentseasonid,
+            currentepisodeid = self.library.get_episode_id(showid=str(tvshowid), showseason=currentseasonid,
                                                    showepisode=currentepisodenumber)
         else:
             # wtf am i doing here error.. ####
@@ -355,7 +264,7 @@ class Player(xbmc.Player):
                                                 addonSettings.getAddonInfo('path'), "default", "1080i")
                     postPlayPage.setItem(episode)
                     postPlayPage.setPreviousItem(current_episode)
-                    upnextitems = self.parse_tvshows_recommended(6)
+                    upnextitems = self.library.parse_tvshows_recommended(6)
                     postPlayPage.setUpNextList(upnextitems)
                     playedinarownumber = addonSettings.getSetting("playedInARow")
                     playTime = xbmc.Player().getTime()
@@ -388,99 +297,11 @@ class Player(xbmc.Player):
             self.playedinarow = 1
         del p
 
-    def parse_tvshows_recommended(self, limit):
-        items = []
-        prefix = "recommended-episodes"
-        json_query = LIBRARY._fetch_recommended_episodes()
-
-        if json_query:
-            # First unplayed episode of recent played tvshows
-            self.logMsg("getting next up tvshows " + json_query, 2)
-            json_query = json.loads(json_query)
-            if "result" in json_query and 'tvshows' in json_query['result']:
-                count = -1
-                for item in json_query['result']['tvshows']:
-                    if xbmc.abortRequested:
-                        break
-                    if count == -1:
-                        count += 1
-                        continue
-                    json_query2 = xbmcgui.Window(10000).getProperty(prefix + "-data-" + str(item['tvshowid']))
-                    if json_query2:
-                        self.logMsg("getting next up episodes " + json_query2, 2)
-                        json_query2 = json.loads(json_query2)
-                        if "result" in json_query2 and json_query2['result'] is not None and 'episodes' in json_query2[
-                            'result']:
-                            for item2 in json_query2['result']['episodes']:
-                                episode = "%.2d" % float(item2['episode'])
-                                season = "%.2d" % float(item2['season'])
-                                episodeno = "s%se%s" % (season, episode)
-                                break
-                            plot = item2['plot']
-                            episodeid = str(item2['episodeid'])
-                            if len(item['studio']) > 0:
-                                studio = item['studio'][0]
-                            else:
-                                studio = ""
-                            if "director" in item2:
-                                director = " / ".join(item2['director'])
-                            if "writer" in item2:
-                                writer = " / ".join(item2['writer'])
-
-                            liz = xbmcgui.ListItem(item2['title'])
-                            liz.setPath(item2['file'])
-                            liz.setProperty('IsPlayable', 'true')
-                            liz.setInfo(type="Video", infoLabels={"Title": item2['title'],
-                                                                  "Episode": item2['episode'],
-                                                                  "Season": item2['season'],
-                                                                  "Studio": studio,
-                                                                  "Premiered": item2['firstaired'],
-                                                                  "Plot": plot,
-                                                                  "TVshowTitle": item2['showtitle'],
-                                                                  "Rating": str(float(item2['rating'])),
-                                                                  "MPAA": item['mpaa'],
-                                                                  "Playcount": item2['playcount'],
-                                                                  "Director": director,
-                                                                  "Writer": writer,
-                                                                  "mediatype": "episode"})
-                            liz.setProperty("episodeid", episodeid)
-                            liz.setProperty("episodeno", episodeno)
-                            liz.setProperty("resumetime", str(item2['resume']['position']))
-                            liz.setProperty("totaltime", str(item2['resume']['total']))
-                            liz.setProperty("type", 'episode')
-                            liz.setProperty("fanart_image", item2['art'].get('tvshow.fanart', ''))
-                            liz.setProperty("dbid", str(item2['episodeid']))
-                            liz.setArt(item2['art'])
-                            liz.setThumbnailImage(item2['art'].get('thumb', ''))
-                            liz.setIconImage('DefaultTVShows.png')
-                            hasVideo = False
-                            for key, value in item2['streamdetails'].iteritems():
-                                for stream in value:
-                                    if 'video' in key:
-                                        hasVideo = True
-                                    liz.addStreamInfo(key, stream)
-
-                            # if duration wasnt in the streaminfo try adding the scraped one
-                            if not hasVideo:
-                                stream = {'duration': item2['runtime']}
-                                liz.addStreamInfo("video", stream)
-
-                            items.append(liz)
-
-                            count += 1
-                            if count == limit:
-                                break
-                    if count == limit:
-                        break
-            del json_query
-        self.logMsg("getting next up episodes completed ", 2)
-        return items
-
     def autoPlayPlayback(self):
         currentFile = xbmc.Player().getPlayingFile()
 
         # Get the active player
-        result = self.getNowPlaying()
+        result = self.library.get_now_playing()
         if 'result' in result:
             itemtype = result["result"]["item"]["type"]
             addonSettings = xbmcaddon.Addon(id='service.nextup.notification')
@@ -499,12 +320,12 @@ class Player(xbmc.Player):
 
             # Try to get tvshowid by showtitle from kodidb if tvshowid is -1 like in strm streams which are added to kodi db
             if int(tvshowid) == -1:
-                tvshowid = self.showtitle_to_id(title=currentshowtitle)
+                tvshowid = self.library.showtitle_to_id(title=currentshowtitle)
                 self.logMsg("Fetched missing tvshowid " + str(tvshowid), 2)
 
             if (itemtype == "episode"):
                 # Get current episodeid
-                currentepisodeid = self.get_episode_id(showid=str(tvshowid), showseason=currentseasonid,
+                currentepisodeid = self.library.get_episode_id(showid=str(tvshowid), showseason=currentseasonid,
                                                        showepisode=currentepisodenumber)
             else:
                 # wtf am i doing here error.. ####
