@@ -12,7 +12,7 @@ class Utils:
     @staticmethod
     def get_json(method, params):
         json_response = xbmc.executeJSONRPC(
-            '{ "jsonrpc": "2.0", "method" : "%s", "params": %s, "id":1 }' % (method, try_encode(params)))
+            '{ "jsonrpc": "2.0", "method" : "%s", "params": %s, "id":1 }' % (method, Utils.try_encode(params)))
         jsonobject = json.loads(json_response.decode('utf-8', 'replace'))
         if (jsonobject.has_key('result')):
             jsonobject = jsonobject['result']
