@@ -1,14 +1,15 @@
 import xbmcaddon
 import xbmc
 import xbmcgui
-import Utils as utils
 import AddonSignals
 import library
-from client_information import ClientInformation
+from addon_information import AddonInformation
 from next_up_info import NextUpInfo
 from still_watching_info import StillWatchingInfo
 from unwatched_info import UnwatchedInfo
 from post_play_info import PostPlayInfo
+from logger import Logger
+from utils import Utils
 import sys
 import time
 import requests
@@ -27,11 +28,8 @@ class Player(xbmc.Player):
     _shared_state = {}
 
     xbmcplayer = xbmc.Player()
-    clientInfo = ClientInformation()
-
-    addonName = clientInfo.getAddonName()
-    addonId = clientInfo.getAddonId()
-    addon = xbmcaddon.Addon(id=addonId)
+    addon_info = AddonInformation()
+    addon = addon_info.get_addon()
 
     logLevel = 0
     currenttvshowid = None
@@ -47,11 +45,11 @@ class Player(xbmc.Player):
 
     def __init__(self, *args):
         self.__dict__ = self._shared_state
+        self.logger = Logger("%s %s" % (self.addon_info.get_addon_name(), self.__class__.__name__))
         self.logMsg("Starting playback monitor service", 1)
 
     def logMsg(self, msg, lvl=1):
-        self.className = self.__class__.__name__
-        utils.logMsg("%s %s" % (self.addonName, self.className), msg, int(lvl))
+        self.logger.log(msg, lvl)
 
     def json_query(self, query, ret):
         try:
@@ -112,7 +110,7 @@ class Player(xbmc.Player):
             itemtype = result["result"]["item"]["type"]
             if itemtype == "episode":
                 itemtitle = result["result"]["item"]["showtitle"].encode('utf-8')
-                itemtitle = utils.unicodetoascii(itemtitle)
+                itemtitle = Utils.unicodetoascii(itemtitle)
                 WINDOW.setProperty("NextUpNotification.NowPlaying.Type", itemtype)
                 tvshowid = result["result"]["item"]["tvshowid"]
                 WINDOW.setProperty("NextUpNotification.NowPlaying.DBID", str(tvshowid))
@@ -259,16 +257,16 @@ class Player(xbmc.Player):
                 if genres:
                     genretitle = genres[0]
                     self.logMsg("Looking up tvshow for genre " + genretitle, 2)
-                    tvshow = utils.getJSON('VideoLibrary.GetTVShows', '{ "sort": { "order": "descending", "method": "random" }, "filter": {"and": [{"operator":"is", "field":"genre", "value":"%s"}, {"operator":"is", "field":"playcount", "value":"0"}]}, "properties": [ %s ],"limits":{"end":1} }' % (genretitle, self.fields_tvshows))
+                    tvshow = Utils.get_json('VideoLibrary.GetTVShows', '{ "sort": { "order": "descending", "method": "random" }, "filter": {"and": [{"operator":"is", "field":"genre", "value":"%s"}, {"operator":"is", "field":"playcount", "value":"0"}]}, "properties": [ %s ],"limits":{"end":1} }' % (genretitle, self.fields_tvshows))
                 if not tvshow:
                     self.logMsg("Looking up tvshow without genre", 2)
-                    tvshow = utils.getJSON('VideoLibrary.GetTVShows', '{ "sort": { "order": "descending", "method": "random" }, "filter": {"and": [{"operator":"is", "field":"playcount", "value":"0"}]}, "properties": [ %s ],"limits":{"end":1} }' % self.fields_tvshows)
+                    tvshow = Utils.get_json('VideoLibrary.GetTVShows', '{ "sort": { "order": "descending", "method": "random" }, "filter": {"and": [{"operator":"is", "field":"playcount", "value":"0"}]}, "properties": [ %s ],"limits":{"end":1} }' % self.fields_tvshows)
                 self.logMsg("Got tvshow" + str(tvshow), 2)
                 tvshowid = tvshow[0]["tvshowid"]
                 if int(tvshowid) == -1:
                     tvshowid = self.showtitle_to_id(title=itemtitle)
                     self.logMsg("Fetched missing tvshowid " + str(tvshowid), 2)
-                episode = utils.getJSON('VideoLibrary.GetEpisodes', '{ "tvshowid": %d, "sort": {"method":"episode"}, "filter": {"and": [ {"field": "playcount", "operator": "lessthan", "value":"1"}, {"field": "season", "operator": "greaterthan", "value": "0"} ]}, "properties": [ %s ], "limits":{"end":1}}' % (tvshowid, self.fields_episodes))
+                episode = Utils.get_json('VideoLibrary.GetEpisodes', '{ "tvshowid": %d, "sort": {"method":"episode"}, "filter": {"and": [ {"field": "playcount", "operator": "lessthan", "value":"1"}, {"field": "season", "operator": "greaterthan", "value": "0"} ]}, "properties": [ %s ], "limits":{"end":1}}' % (tvshowid, self.fields_episodes))
 
                 if episode:
                     self.logMsg("Got details of next up episode %s" % str(episode), 2)
@@ -296,7 +294,7 @@ class Player(xbmc.Player):
             currentepisodenumber = result["result"]["item"]["episode"]
             currentseasonid = result["result"]["item"]["season"]
             currentshowtitle = result["result"]["item"]["showtitle"].encode('utf-8')
-            currentshowtitle = utils.unicodetoascii(currentshowtitle)
+            currentshowtitle = Utils.unicodetoascii(currentshowtitle)
             tvshowid = result["result"]["item"]["tvshowid"]
             shortplayMode = addonSettings.getSetting("shortPlayMode")
             shortplayNotification= addonSettings.getSetting("shortPlayNotification")
@@ -478,7 +476,7 @@ class Player(xbmc.Player):
             currentepisodenumber = result["result"]["item"]["episode"]
             currentseasonid = result["result"]["item"]["season"]
             currentshowtitle = result["result"]["item"]["showtitle"].encode('utf-8')
-            currentshowtitle = utils.unicodetoascii(currentshowtitle)
+            currentshowtitle = Utils.unicodetoascii(currentshowtitle)
             tvshowid = result["result"]["item"]["tvshowid"]
             shortplayMode = addonSettings.getSetting("shortPlayMode")
             shortplayNotification= addonSettings.getSetting("shortPlayNotification")
