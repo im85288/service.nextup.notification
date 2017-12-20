@@ -1,6 +1,8 @@
+from platform import machine
+
 import xbmc
 import xbmcgui
-from platform import machine
+
 from common import Common
 
 ACTION_PLAYER_STOP = 13

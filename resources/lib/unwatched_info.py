@@ -1,6 +1,7 @@
+from platform import machine
+
 import xbmc
 import xbmcgui
-from platform import machine
 
 ACTION_PLAYER_STOP = 13
 OS_MACHINE = machine()
@@ -24,7 +25,7 @@ class UnwatchedInfo(xbmcgui.WindowXMLDialog):
         overview = self.item['plot']
         name = self.item['title']
 
-        rating = str(round(float(self.item['rating']),1))
+        rating = str(round(float(self.item['rating']), 1))
 
         season = self.item['season']
         episodeNum = self.item['episode']
@@ -51,7 +52,6 @@ class UnwatchedInfo(xbmcgui.WindowXMLDialog):
             self.getControl(5003).setLabel(rating)
         else:
             self.getControl(5003).setVisible(False)
-
 
     def setItem(self, item):
         self.item = item
