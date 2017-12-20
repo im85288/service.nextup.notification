@@ -1,5 +1,6 @@
-import xbmc
 import sys
+
+import xbmc
 
 if sys.version_info < (2, 7):
     import simplejson as json

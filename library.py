@@ -20,10 +20,10 @@
 #    Thanks to the original authors
 
 import sys
+
 import xbmc
-import xbmcgui
 import xbmcaddon
-from time import gmtime, strftime
+import xbmcgui
 
 if sys.version_info < (2, 7):
     import simplejson as json
@@ -38,41 +38,39 @@ class LibraryFunctions():
         self.WINDOW = xbmcgui.Window(10000)
         self.LIMIT = 20
 
-
     # Common properties used by various types of queries
     tvepisode_properties = [
-                            "title",
-                            "playcount",
-                            "season",
-                            "episode",
-                            "showtitle",
-                            "plot",
-                            "file",
-                            "rating",
-                            "resume",
-                            "tvshowid",
-                            "art",
-                            "streamdetails",
-                            "firstaired",
-                            "runtime",
-                            "director",
-                            "writer",
-                            "cast",
-                            "dateadded",
-                            "lastplayed"]
+        "title",
+        "playcount",
+        "season",
+        "episode",
+        "showtitle",
+        "plot",
+        "file",
+        "rating",
+        "resume",
+        "tvshowid",
+        "art",
+        "streamdetails",
+        "firstaired",
+        "runtime",
+        "director",
+        "writer",
+        "cast",
+        "dateadded",
+        "lastplayed"]
     tvshow_properties = [
-                            "title",
-                            "studio",
-                            "mpaa",
-                            "file",
-                            "art"]
+        "title",
+        "studio",
+        "mpaa",
+        "file",
+        "art"]
 
     # Common sort/filter arguments shared by multiple queries
     recent_sort = {"order": "descending", "method": "dateadded"}
     inprogress_filter = {"field": "inprogress", "operator": "true", "value": ""}
     unplayed_filter = {"field": "playcount", "operator": "lessthan", "value": "1"}
     specials_filter = {"field": "season", "operator": "greaterthan", "value": "0"}
-
 
     # Construct a JSON query string from the arguments, execute it, return UTF8
     def json_query(self, method, unplayed=False, include_specials=True, properties=None, sort=False,
@@ -108,26 +106,24 @@ class LibraryFunctions():
 
     # Recommended episodes: Earliest unwatched episode from in-progress shows
     def _fetch_recommended_episodes(self):
-            # First we get a list of all the in-progress TV shows.
-            json_query_string = self.json_query("VideoLibrary.GetTVShows", unplayed=True,
-                                                properties=self.tvshow_properties,
-                                                sort={"order": "descending",
-                                                      "method": "lastplayed"},
-                                                query_filter=self.inprogress_filter)
-            json_query = json.loads(json_query_string)
+        # First we get a list of all the in-progress TV shows.
+        json_query_string = self.json_query("VideoLibrary.GetTVShows", unplayed=True,
+                                            properties=self.tvshow_properties,
+                                            sort={"order": "descending",
+                                                  "method": "lastplayed"},
+                                            query_filter=self.inprogress_filter)
+        json_query = json.loads(json_query_string)
 
-            # If we found any, find the oldest unwatched show for each one.
-            if "result" in json_query and 'tvshows' in json_query['result']:
-                for item in json_query['result']['tvshows']:
-                    if xbmc.abortRequested:
-                        break
-                    json_query2 = self.json_query("VideoLibrary.GetEpisodes", unplayed=True,
-                                                  include_specials=True,
-                                                  properties=self.tvepisode_properties,
-                                                  sort={"method": "episode"}, limit=1,
-                                                  params={"tvshowid": item['tvshowid']})
-                    self.WINDOW.setProperty("recommended-episodes-data-%d"
-                                            % item['tvshowid'], json_query2)
-            return json_query_string
-
-
+        # If we found any, find the oldest unwatched show for each one.
+        if "result" in json_query and 'tvshows' in json_query['result']:
+            for item in json_query['result']['tvshows']:
+                if xbmc.abortRequested:
+                    break
+                json_query2 = self.json_query("VideoLibrary.GetEpisodes", unplayed=True,
+                                              include_specials=True,
+                                              properties=self.tvepisode_properties,
+                                              sort={"method": "episode"}, limit=1,
+                                              params={"tvshowid": item['tvshowid']})
+                self.WINDOW.setProperty("recommended-episodes-data-%d"
+                                        % item['tvshowid'], json_query2)
+        return json_query_string

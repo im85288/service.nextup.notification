@@ -1,11 +1,13 @@
+import time
+
 import xbmc
 import xbmcgui
-import time
-from logger import Logger
-from common import Common
-from player import Player
+
 from addon_information import AddonInformation
 from addon_settings import AddonSettings
+from common import Common
+from logger import Logger
+from player import Player
 from skip_intro import SkipIntro
 
 
@@ -100,7 +102,7 @@ class PlaybackMonitor:
                     self.home_window.clearProperty(Common.UN_SKIPPED)
             else:
                 skip_intro_page = SkipIntro("script-nextup-notification-SkipIntro.xml",
-                                          self.addon_information.get_addon_info('path'), "default", "1080i")
+                                            self.addon_information.get_addon_info('path'), "default", "1080i")
                 # close skip intro dialog after time
                 xbmc.executebuiltin('AlarmClock(closedialog,Dialog.Close(all,true),00:15,silent)')
                 self.logger.log("showing skip intro page")

@@ -1,7 +1,9 @@
-import xbmcaddon
-import xbmc
 import os
 import sys
+
+import xbmc
+import xbmcaddon
+
 from resources.lib.addon_information import AddonInformation
 from resources.lib.logger import Logger
 from resources.lib.playback_monitor import PlaybackMonitor

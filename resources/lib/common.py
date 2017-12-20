@@ -1,9 +1,8 @@
-import xbmcgui
 import xbmc
+import xbmcgui
 
 
 class Common:
-
     UN_SKIPPED = "NextUpNotification.Unskipped"
     INTRO_START = "NextUpNotification.intro_start"
     INTRO_LENGTH = "NextUpNotification.intro_length"

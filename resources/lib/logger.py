@@ -1,11 +1,12 @@
-import xbmc
 import inspect
+
+import xbmc
+
 from addon_information import AddonInformation
 from common import Common
 
 
 class Logger:
-
     def __init__(self, title):
         self.title = title
         self.client_information = AddonInformation()

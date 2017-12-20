@@ -1,6 +1,7 @@
+from platform import machine
+
 import xbmc
 import xbmcgui
-from platform import machine
 
 ACTION_PLAYER_STOP = 13
 OS_MACHINE = machine()
@@ -38,7 +39,7 @@ class NextUpInfo(xbmcgui.WindowXMLDialog):
         episodeNum = self.item['episode']
         episodeInfo = str(season) + 'x' + str(episodeNum) + '.'
 
-        rating = str(round(float(self.item['rating']),1))
+        rating = str(round(float(self.item['rating']), 1))
         year = self.item['firstaired']
         info = year
 
