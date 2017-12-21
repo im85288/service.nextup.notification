@@ -12,9 +12,10 @@ class AddonSettings:
     DISPLAY_RANDOM_UNWATCHED = "displayRandomUnwatched"
     SHOW_POST_PLAY = "showPostPlay"
     SHOW_POST_PLAY_PREVIEW = "showPostPlayPreview"
+    LOG_LEVEL = "logLevel"
 
     def __init__(self):
-        self.addon_information = AddonInformation
+        self.addon_information = AddonInformation()
 
     def get_setting(self, key):
         return self.addon_information.get_addon().getSetting(key)

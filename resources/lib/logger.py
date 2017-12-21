@@ -2,18 +2,18 @@ import inspect
 
 import xbmc
 
-from addon_information import AddonInformation
+from addon_settings import AddonSettings
 from common import Common
 
 
 class Logger:
     def __init__(self, title):
         self.title = title
-        self.client_information = AddonInformation()
+        self.addon_settings = AddonSettings()
 
     def log(self, msg, level=1):
-        log_level = int(self.client_information.get_addon_info("logLevel"))
-        Common.get_home_window().setProperty('logLevel', str(log_level))
+        log_level = int(self.addon_settings.get_setting(AddonSettings.LOG_LEVEL))
+        Common.get_home_window().setProperty(AddonSettings.LOG_LEVEL, str(log_level))
         if log_level >= int(level):
             if log_level == 2:  # inspect.stack() is expensive
                 try:

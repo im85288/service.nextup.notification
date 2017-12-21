@@ -13,9 +13,9 @@ from skip_intro import SkipIntro
 
 class PlaybackMonitor:
     def __init__(self):
-        self.logger = Logger("%s %s" % (self.addonName, self.__class__.__name__))
-        self.logger.log("Starting Playback Monitior", 0)
         self.addon_information = AddonInformation()
+        self.logger = Logger("%s %s" % (self.addon_information.get_addon_name(), self.__class__.__name__))
+        self.logger.log("Starting Playback Monitior", 0)
         self.addon_settings = AddonSettings()
         self.home_window = Common.get_home_window()
         self.player = Player()
