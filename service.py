@@ -11,7 +11,6 @@ sys.path.append(BASE_RESOURCE_PATH)
 import Utils as utils
 from Player import Player
 from ClientInformation import ClientInformation
-from SkipIntro import SkipIntro
 
 class Service():
     clientInfo = ClientInformation()
