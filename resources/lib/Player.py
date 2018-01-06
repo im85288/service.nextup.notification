@@ -46,6 +46,8 @@ class Player(xbmc.Player):
     def __init__(self, *args):
         self.__dict__ = self._shared_state
         self.logMsg("Starting playback monitor service", 1)
+        self.emby_data = None
+        AddonSignals.registerSlot('embycon', 'embycon_next_episode', self.emby_next_up)
 
     def logMsg(self, msg, lvl=1):
         self.className = self.__class__.__name__
@@ -89,7 +91,7 @@ class Player(xbmc.Player):
             self.logMsg("Getting details of now  playing media", 1)
             result = xbmc.executeJSONRPC(
                 '{"jsonrpc": "2.0", "id": 1, "method": "Player.GetItem", "params": {"playerid": ' + str(
-                    playerid) + ', "properties": ["showtitle", "tvshowid", "episode", "season", "playcount","genre"] } }')
+                    playerid) + ', "properties": ["showtitle", "tvshowid", "episode", "season", "playcount","genre","plotoutline"] } }')
             result = unicode(result, 'utf-8', errors='ignore')
             self.logMsg("Got details of now playing media" + result, 2)
 
@@ -437,6 +439,22 @@ class Player(xbmc.Player):
         self.logMsg("getting next up episodes completed ", 2)
         return items
 
+    def emby_next_up(self, data):
+        self.logMsg("emby next up called with data %s " % str(data), 2)
+        self.emby_data = data
+
+    def handle_emby_playback(self, embyid):
+        self.logMsg("handle emby playback called with embyid %s " % str(embyid), 2)
+        previousembyid = self.emby_data["prev_id"]
+        if str(previousembyid) == embyid:
+            nextpisodeid = str(self.emby_data["id"])
+            self.logMsg("previous emby id matches this so we have a next up embyid %s and title %s" % (nextpisodeid, str(self.emby_data["title"])), 2)
+            # Signal to emby to play the next episode
+            self.logMsg("sending id %s to emby con to play" % nextpisodeid)
+            AddonSignals.sendSignal("embycon_play_id", {'id': nextpisodeid})
+            self.logMsg("RunPlugin(plugin://plugin.video.embycon/?mode=PLAY&id=%s)" % nextpisodeid)
+            xbmc.executebuiltin('RunPlugin(plugin://plugin.video.embycon/?mode=PLAY&id=%s)' % nextpisodeid)
+
     def autoPlayPlayback(self):
         currentFile = xbmc.Player().getPlayingFile()
 
@@ -451,6 +469,7 @@ class Player(xbmc.Player):
             currentshowtitle = result["result"]["item"]["showtitle"].encode('utf-8')
             currentshowtitle = utils.unicodetoascii(currentshowtitle)
             tvshowid = result["result"]["item"]["tvshowid"]
+            embyid = result["result"]["item"]["plotoutline"]
             shortplayMode = addonSettings.getSetting("shortPlayMode")
             shortplayNotification= addonSettings.getSetting("shortPlayNotification")
             shortplayLength = int(addonSettings.getSetting("shortPlayLength")) * 60
@@ -464,8 +483,18 @@ class Player(xbmc.Player):
                 self.logMsg("Fetched missing tvshowid " + str(tvshowid), 2)
 
             if (itemtype == "episode"):
-                # Get current episodeid
-                currentepisodeid = self.get_episode_id(showid=str(tvshowid), showseason=currentseasonid, showepisode=currentepisodenumber)
+                if embyid:
+                    embyid = str(embyid)
+                    if embyid.startswith("emby_id:"):
+                        embyid = embyid[8:]
+                        self.logMsg("EmbyID retrieved %s " % str(embyid), 2)
+                        return self.handle_emby_playback(embyid)
+                else:
+                    embyid = ""
+
+                if not embyid:
+                    # Get current episodeid
+                    currentepisodeid = self.get_episode_id(showid=str(tvshowid), showseason=currentseasonid, showepisode=currentepisodenumber)
             else:
                 # wtf am i doing here error.. ####
                 self.logMsg("Error: cannot determine if episode", 1)
