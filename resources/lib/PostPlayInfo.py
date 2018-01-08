@@ -4,32 +4,30 @@ import xbmcgui
 from platform import machine
 import time
 import threading
+import AddonSignals
 
 ACTION_PLAYER_STOP = 13
 OS_MACHINE = machine()
-
 PASSOUT_PROTECTION_DURATION_SECONDS = 7200
 PASSOUT_LAST_VIDEO_DURATION_MILLIS = 1200000
 
-class PostPlayInfo(xbmcgui.WindowXML):
 
+class PostPlayInfo(xbmcgui.WindowXML):
 
     PREV_BUTTON_ID = 101
     NEXT_BUTTON_ID = 102
-
     HOME_BUTTON_ID = 201
     SPOILERS_BUTTON_ID = 202
-
     NEXTUP_LIST_ID = 400
 
     def __init__(self, *args, **kwargs):
-        xbmc.log("PostPlayInfo ->  init called",level=xbmc.LOGNOTICE)
+        xbmc.log("PostPlayInfo ->  init called", level=xbmc.LOGNOTICE)
         if OS_MACHINE[0:5] == 'armv7':
             xbmcgui.WindowXML.__init__(self)
         else:
             xbmcgui.WindowXML.__init__(self, *args, **kwargs)
 
-        xbmc.log("PostPlayInfo ->  init called 2",level=xbmc.LOGNOTICE)
+        xbmc.log("PostPlayInfo ->  init called 2", level=xbmc.LOGNOTICE)
 
         self._winID = None
         self.action_exitkeys_id = [10, 13]
@@ -39,17 +37,17 @@ class PostPlayInfo(xbmcgui.WindowXML):
         self.cancel = False
         self.autoplayed = False
         self.playAutomatically = True
-
         self.previous = None
         self.timeout = None
         self.showStillWatching = False
         self.addonSettings = xbmcaddon.Addon(id='service.nextup.notification')
+        self.emby_mode = False
 
-        xbmc.log("PostPlayInfo ->  init completed",level=xbmc.LOGNOTICE)
+        xbmc.log("PostPlayInfo ->  init completed", level=xbmc.LOGNOTICE)
 
 
     def onInit(self):
-        xbmc.log("PostPlayInfo ->  onInit called",level=xbmc.LOGNOTICE)
+        xbmc.log("PostPlayInfo ->  onInit called", level=xbmc.LOGNOTICE)
         self.upNextControl = self.getControl(self.NEXTUP_LIST_ID)
         self.spoilersControl = self.getControl(self.SPOILERS_BUTTON_ID)
         self._winID = xbmcgui.getCurrentWindowId()
@@ -71,26 +69,26 @@ class PostPlayInfo(xbmcgui.WindowXML):
 
         xbmcgui.Window(10000).clearProperty("NextUpNotification.AutoPlayed")
 
-        xbmc.log("PostPlayInfo ->  onInit completed",level=xbmc.LOGNOTICE)
+        xbmc.log("PostPlayInfo ->  onInit completed", level=xbmc.LOGNOTICE)
 
     def prepareSpoilerButton(self):
         showpostplayplot = self.addonSettings.getSetting("showPostPlayPlot") == "true"
         self.spoilersControl.setSelected(showpostplayplot)
         if showpostplayplot:
-            self.setProperty('showplot','1')
-            xbmc.log("PostPlayInfo ->  showpostplayplot true",level=xbmc.LOGNOTICE)
+            self.setProperty('showplot', '1')
+            xbmc.log("PostPlayInfo ->  showpostplayplot true", level=xbmc.LOGNOTICE)
         else:
             self.setProperty('showplot','')
-            xbmc.log("PostPlayInfo ->  showpostplayplot false",level=xbmc.LOGNOTICE)
+            xbmc.log("PostPlayInfo ->  showpostplayplot false", level=xbmc.LOGNOTICE)
 
     def setUpNextList(self, list):
         self.upnextlist = list
 
     def prepareStillWatching(self):
         if self.showStillWatching:
-            self.setProperty('stillwatching','1')
+            self.setProperty('stillwatching', '1')
         else:
-            self.setProperty('stillwatching','')
+            self.setProperty('stillwatching', '')
 
     def fillUpNext(self):
         self.upNextControl.reset()
@@ -99,72 +97,68 @@ class PostPlayInfo(xbmcgui.WindowXML):
     def setInfo(self):
         if self.item is not None:
                 self.setProperty(
-                    'background',self.item['art'].get('tvshow.fanart', ''))
+                    'background', self.item['art'].get('tvshow.fanart', ''))
                 self.setProperty(
-                    'banner',self.item['art'].get('tvshow.banner', ''))
+                    'banner', self.item['art'].get('tvshow.banner', ''))
                 self.setProperty(
-                    'characterart',self.item['art'].get('tvshow.characterart', ''))
+                    'characterart', self.item['art'].get('tvshow.characterart', ''))
                 self.setProperty(
-                    'next.poster',self.item['art'].get('tvshow.poster', ''))
+                    'next.poster', self.item['art'].get('tvshow.poster', ''))
                 self.setProperty(
-                    'next.thumb',self.item['art'].get('thumb', ''))
+                    'next.thumb', self.item['art'].get('thumb', ''))
                 self.setProperty(
-                    'next.clearart',self.item['art'].get('tvshow.clearart', ''))
+                    'next.clearart', self.item['art'].get('tvshow.clearart', ''))
                 self.setProperty(
-                    'next.landscape',self.item['art'].get('tvshow.landscape', ''))
+                    'next.landscape', self.item['art'].get('tvshow.landscape', ''))
                 self.setProperty(
-                    'next.plot',self.item['plot'])
+                    'next.plot', self.item['plot'])
                 self.setProperty(
-                    'next.tvshowtitle',self.item['showtitle'])
+                    'next.tvshowtitle', self.item['showtitle'])
                 self.setProperty(
-                    'next.title',self.item['title'])
+                    'next.title', self.item['title'])
                 self.setProperty(
-                    'next.season',str(self.item['season']))
+                    'next.season', str(self.item['season']))
                 self.setProperty(
-                    'next.episode',str(self.item['episode']))
+                    'next.episode', str(self.item['episode']))
                 self.setProperty(
-                    'next.year',str(self.item['firstaired']))
+                    'next.year', str(self.item['firstaired']))
                 self.setProperty(
-                    'next.rating',str(round(float(self.item['rating']),1)))
+                    'next.rating', str(round(float(self.item['rating']), 1)))
                 self.setProperty(
-                    'next.duration',str(self.item['runtime'] / 60))
-
+                    'next.duration', str(self.item['runtime'] / 60))
 
     def setPreviousInfo(self):
-
         self.setProperty(
-            'clearlogo',self.previousitem['art'].get('tvshow.clearlogo', ''))
+            'clearlogo', self.previousitem['art'].get('tvshow.clearlogo', ''))
         self.setProperty(
-            'previous.poster',self.previousitem['art'].get('tvshow.poster', ''))
+            'previous.poster', self.previousitem['art'].get('tvshow.poster', ''))
         self.setProperty(
-            'previous.thumb',self.previousitem['art'].get('thumb', ''))
+            'previous.thumb', self.previousitem['art'].get('thumb', ''))
         self.setProperty(
-            'previous.clearart',self.previousitem['art'].get('tvshow.clearart', ''))
+            'previous.clearart', self.previousitem['art'].get('tvshow.clearart', ''))
         self.setProperty(
-            'previous.landscape',self.previousitem['art'].get('tvshow.landscape', ''))
+            'previous.landscape', self.previousitem['art'].get('tvshow.landscape', ''))
         self.setProperty(
-            'previous.plot',self.previousitem['plot'])
+            'previous.plot', self.previousitem['plot'])
         self.setProperty(
-            'previous.tvshowtitle',self.previousitem['showtitle'])
+            'previous.tvshowtitle', self.previousitem['showtitle'])
         self.setProperty(
-            'previous.title',self.previousitem['title'])
+            'previous.title', self.previousitem['title'])
         self.setProperty(
-            'previous.season',str(self.previousitem['season']))
+            'previous.season', str(self.previousitem['season']))
         self.setProperty(
-            'previous.episode',str(self.previousitem['episode']))
+            'previous.episode', str(self.previousitem['episode']))
         self.setProperty(
-            'previous.year',str(self.previousitem['firstaired']))
+            'previous.year', str(self.previousitem['firstaired']))
         self.setProperty(
-            'previous.rating',str(round(float(self.previousitem['rating']),1)))
+            'previous.rating', str(round(float(self.previousitem['rating']), 1)))
         self.setProperty(
-            'previous.duration',str(self.previousitem['runtime'] / 60))
-
+            'previous.duration', str(self.previousitem['runtime'] / 60))
 
     def setProperty(self, key, value):
 
         if not self._winID:
             self._winID = xbmcgui.getCurrentWindowId()
-
         try:
             xbmcgui.Window(self._winID).setProperty(key, value)
             xbmcgui.WindowXML.setProperty(self, key, value)
@@ -194,6 +188,9 @@ class PostPlayInfo(xbmcgui.WindowXML):
     def setAutoPlayed(self, autoplayed):
         self.autoplayed = autoplayed
 
+    def setEmbyMode(self, emby_mode):
+        self.emby_mode = emby_mode
+
     def onFocus(self, controlId):
         pass
 
@@ -219,7 +216,7 @@ class PostPlayInfo(xbmcgui.WindowXML):
 
         elif controlID == self.NEXTUP_LIST_ID:
             episodeid = self.upNextControl.getSelectedItem().getProperty("episodeid")
-            xbmc.log("PostPlayInfo ->  onclick action on next up list item id is  "+episodeid,level=xbmc.LOGNOTICE)
+            xbmc.log("PostPlayInfo ->  onclick action on next up list item id is  "+episodeid, level=xbmc.LOGNOTICE)
             self.playVideo(episodeid)
             self.close()
         elif controlID == self.HOME_BUTTON_ID:
@@ -230,29 +227,33 @@ class PostPlayInfo(xbmcgui.WindowXML):
                 selected = "true"
             else:
                 selected = "false"
-            xbmc.log("PostPlayInfo ->  onclick action spoilers button selected? "+selected,level=xbmc.LOGNOTICE)
+            xbmc.log("PostPlayInfo ->  onclick action spoilers button selected? "+selected, level=xbmc.LOGNOTICE)
             self.addonSettings.setSetting("showPostPlayPlot",selected)
             if selected == "true":
-                self.setProperty('showplot','1')
+                self.setProperty('showplot' ,'1')
             else:
-                self.setProperty('showplot','')
+                self.setProperty('showplot' ,'')
 
         pass
 
     def playVideo(self, episodeid):
 
-        xbmc.log("PostPlayInfo ->  play video called episode id is " +episodeid,level=xbmc.LOGNOTICE)
+        xbmc.log("PostPlayInfo ->  play video called episode id is " +episodeid, level=xbmc.LOGNOTICE)
 
         # Play media
-        xbmc.executeJSONRPC(
-            '{ "jsonrpc": "2.0", "id": 0, "method": "Player.Open", '
-            '"params": { "item": {"episodeid": ' + episodeid + '} } }')
+        if not self.emby_mode:
+            xbmc.executeJSONRPC(
+                '{ "jsonrpc": "2.0", "id": 0, "method": "Player.Open", '
+                '"params": { "item": {"episodeid": ' + episodeid + '} } }')
+        else:
+            play_info = {'item_id': str(episodeid), 'auto_resume': False, 'force_transcode': False, 'media_source_id': '', 'use_default': True}
+            AddonSignals.sendSignal("embycon_play_action", play_info, source_id="embycon")
 
     def onAction(self, action):
 
         self.cancelTimer()
         if action in (xbmcgui.ACTION_PREVIOUS_MENU, xbmcgui.ACTION_NAV_BACK):
-            xbmc.log("PostPlayInfo ->  closing ",level=xbmc.LOGNOTICE)
+            xbmc.log("PostPlayInfo ->  closing ", level=xbmc.LOGNOTICE)
             self.close()
 
 
@@ -265,7 +266,7 @@ class PostPlayInfo(xbmcgui.WindowXML):
         self.setProperty('countdown', '')
 
     def countdown(self):
-        xbmc.log("PostPlayInfo ->  countdown started timeout",level=xbmc.LOGNOTICE)
+        xbmc.log("PostPlayInfo ->  countdown started timeout", level=xbmc.LOGNOTICE)
         while self.timeout and not xbmc.Monitor().waitForAbort(0.1):
             now = time.time()
             if self.timeout and now > self.timeout:
@@ -273,10 +274,10 @@ class PostPlayInfo(xbmcgui.WindowXML):
                 self.setProperty('countdown', '')
                 if not self.showStillWatching and self.playAutomatically:
                     xbmc.executebuiltin('SendClick(,{0})'.format(self.NEXT_BUTTON_ID))
-                    xbmc.log("PostPlayInfo ->  played next",level=xbmc.LOGNOTICE)
+                    xbmc.log("PostPlayInfo ->  played next", level=xbmc.LOGNOTICE)
                     self.setAutoPlayed(True)
-                    xbmcgui.Window(10000).setProperty("NextUpNotification.AutoPlayed","1")
+                    xbmcgui.Window(10000).setProperty("NextUpNotification.AutoPlayed", "1")
                 break
             elif self.timeout is not None:
                 self.setProperty('countdown', str(min(15, int((self.timeout or now) - now))))
-                xbmc.log("PostPlayInfo ->  increment countdown",level=xbmc.LOGNOTICE)
+                xbmc.log("PostPlayInfo ->  increment countdown", level=xbmc.LOGNOTICE)
