@@ -10,18 +10,15 @@ from StillWatchingInfo import StillWatchingInfo
 from UnwatchedInfo import UnwatchedInfo
 from PostPlayInfo import PostPlayInfo
 import sys
-import time
-import requests
-import urllib
-import json
 
 if sys.version_info < (2, 7):
     import simplejson as json
 else:
     import json
-
 LIBRARY = library.LibraryFunctions()
 # service class for playback monitoring
+
+
 class Player(xbmc.Player):
     # Borg - multiple instances, shared state
     _shared_state = {}
