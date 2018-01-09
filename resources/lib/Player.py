@@ -432,7 +432,8 @@ class Player(xbmc.Player):
         self.logMsg("handle_emby_lookup_of_episode called with embyid %s " % str(embyid), 2)
         if self.emby_data:
             previousembyid = self.emby_data["current_item"]["id"]
-            if str(previousembyid) == embyid:
+            if str(previousembyid) == str(embyid):
+                self.logMsg("handle_emby_lookup_of_episode returning data %s " % str(self.emby_data["next_item"]), 2)
                 return self.emby_data["next_item"]
 
     def handle_emby_lookup_of_current_episode(self, embyid):
@@ -450,6 +451,7 @@ class Player(xbmc.Player):
         self.logMsg("transform_emby_data_to_kodi_format called with data %s " % str(episode), 2)
         data = {}
         data["episodeid"] = episode["id"]
+        data["art"] = {}
         data["art"]["tvshow.poster"] = episode["image"]
         data["art"]["thumb"] = episode["thumb"]
         data["art"]["tvshow.fanart"] = episode["fanartimage"]
@@ -486,7 +488,7 @@ class Player(xbmc.Player):
                 if self.embyid:
                     embyid = str(self.embyid)
                     if embyid.startswith("emby_id:"):
-                        embyid = embyid[8:]
+                        self.embyid = embyid[8:]
                         self.logMsg("EmbyID retrieved %s " % str(embyid), 2)
                         self.emby_mode = True
                         currentepisodeid = embyid

@@ -38,9 +38,12 @@ class NextUpInfo(xbmcgui.WindowXMLDialog):
         episodeNum = self.item['episode']
         episodeInfo = str(season) + 'x' + str(episodeNum) + '.'
 
-        rating = str(round(float(self.item['rating']),1))
+        if self.item['rating'] is not None:
+            rating = str(round(float(self.item['rating']), 1))
+        else:
+            rating = None
         year = self.item['firstaired']
-        info = year
+        info = str(year)
 
         # set the dialog data
         self.getControl(3000).setLabel(name)
