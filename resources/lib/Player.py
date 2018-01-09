@@ -333,8 +333,8 @@ class Player(xbmc.Player):
             episode = self.hanled_kodi_lookup_of_episode(self.tvshowid, currentFile, self.includeWatched)
             current_episode = self.handle_kodi_lookup_of_current_episode(self.tvshowid)
         else:
-            episode = self.handle_emby_lookup_of_episode(self.embyid)
-            current_episode = self.handle_emby_lookup_of_current_episode(self.embyid)
+            episode = self.transform_emby_data_to_kodi_format(self.handle_emby_lookup_of_episode(self.embyid))
+            current_episode = self.transform_emby_data_to_kodi_format(self.handle_emby_lookup_of_current_episode(self.embyid))
 
         if episode is None:
             # no episode get out of here
@@ -431,20 +431,38 @@ class Player(xbmc.Player):
     def handle_emby_lookup_of_episode(self, embyid):
         self.logMsg("handle_emby_lookup_of_episode called with embyid %s " % str(embyid), 2)
         if self.emby_data:
-            previousembyid = self.emby_data["prev_id"]
+            previousembyid = self.emby_data["current_item"]["id"]
             if str(previousembyid) == embyid:
-                return self.emby_data
+                return self.emby_data["next_item"]
 
     def handle_emby_lookup_of_current_episode(self, embyid):
         self.logMsg("handle_emby_lookup_of_current_episode called with embyid %s " % str(embyid), 2)
         if self.emby_data:
-            previousembyid = self.emby_data["prev_id"]
+            previousembyid = self.emby_data["current_item"]["id"]
             if str(previousembyid) == embyid:
-                return self.emby_data
+                return self.emby_data["current_item"]
 
     def emby_data_received(self, data):
         self.logMsg("emby_data_received called with data %s " % str(data), 2)
         self.emby_data = data
+
+    def transform_emby_data_to_kodi_format(self, episode):
+        self.logMsg("transform_emby_data_to_kodi_format called with data %s " % str(episode), 2)
+        data = {}
+        data["episodeid"] = episode["id"]
+        data["art"]["tvshow.poster"] = episode["image"]
+        data["art"]["thumb"] = episode["thumb"]
+        data["art"]["tvshow.fanart"] = episode["fanartimage"]
+        data["plot"] = episode["overview"]
+        data["showtitle"] = episode["tvshowtitle"]
+        data["title"] = episode["title"]
+        data["playcount"] = episode["playcount"]
+        data["season"] = episode["season"]
+        data["episode"] = episode["episode"]
+        data["rating"] = episode["rating"]
+        data["firstaired"] = episode["year"]
+        self.logMsg("transform_emby_data_to_kodi_format completed with data %s " % str(data), 2)
+        return data
 
     def handle_now_playing_result(self, result):
         if 'result' in result:
@@ -512,14 +530,14 @@ class Player(xbmc.Player):
             # get the next episode from kodi
             episode = self.handle_kodi_lookup_of_episode(self.tvshowid, currentFile, self.includeWatched)
         else:
-            episode = self.handle_emby_lookup_of_episode(self.embyid)
+            episode = self.transform_emby_data_to_kodi_format(self.handle_emby_lookup_of_episode(self.embyid))
 
         if episode is None:
             # no episode get out of here
             self.logMsg("Error: no episode could be found to play next...exiting", 1)
             return
         self.logMsg("episode details %s" % str(episode), 2)
-        episodeid = episode["episodeid"] if not self.emby_mode else episode["id"]
+        episodeid = episode["episodeid"]
         includePlaycount = True if self.includeWatched else episode["playcount"] == 0
         if includePlaycount and self.currentepisodeid != episodeid:
             # we have a next up episode
