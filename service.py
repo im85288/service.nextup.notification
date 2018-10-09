@@ -46,6 +46,7 @@ class Service():
                     playTime = xbmc.Player().getTime()
                     totalTime = xbmc.Player().getTotalTime()
                     currentFile = xbmc.Player().getPlayingFile()
+                    playlistSize = xbmc.PlayList(xbmc.PLAYLIST_VIDEO).size()
                     addonSettings = xbmcaddon.Addon(id='service.nextup.notification')
                     notificationtime = addonSettings.getSetting("autoPlaySeasonTime")
                     nextUpDisabled = addonSettings.getSetting("disableNextUp") == "true"
@@ -53,8 +54,9 @@ class Service():
                     displayrandomunwatched = addonSettings.getSetting("displayRandomUnwatched") == "true"
                     showpostplay = addonSettings.getSetting("showPostPlay") == "true"
                     showpostplaypreview = addonSettings.getSetting("showPostPlayPreview") == "true"
+                    enablePlaylist = addonSettings.getSetting("enablePlaylist") == "true"
 
-                    if xbmcgui.Window(10000).getProperty("PseudoTVRunning") != "True" and not nextUpDisabled:
+                    if xbmcgui.Window(10000).getProperty("PseudoTVRunning") != "True" and not nextUpDisabled and (enablePlaylist == playlistSize == 0 or enablePlaylist):
 
                         if (not showpostplay or (showpostplaypreview and showpostplay)) and (totalTime - playTime <= int(notificationtime) and (
                                         lastFile is None or lastFile != currentFile)) and totalTime != 0:
