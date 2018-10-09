@@ -10,6 +10,7 @@
         <setting id="includeWatched" type="bool" label="30013" default="false" visible="true" enable="true"/>
         <setting id="displayRandomUnwatched" type="bool" label="30016" default="false" visible="true" enable="true"/>
         <setting id="displayRandomUnwatchedTime" type="number" label="30015" default="600" visible="eq(-1,true)" enable="true"/>
+        <setting id="enablePlaylist" type="bool" label="30032" default="false" visible="true" enable="true"/>
     </category>
     <category label="30004">
         <setting id="disableNextUp" type="bool" label="30014" default="false" visible="true" enable="true"/>
